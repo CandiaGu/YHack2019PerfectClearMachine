@@ -822,6 +822,61 @@ export default class Grid extends Component {
 
     }
 
+    renderPause(){
+        return (
+                <Modal
+                    animationType={"slide"}
+                    transparent={true}
+                    visible={this.state.paused&&!this.state.settingOpen}
+                    style={{flex: 1}}
+                >
+                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
+                        <Text style={{fontSize: 64, fontWeight: '800'}}>Paused</Text>
+                        <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
+                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                resume</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
+                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                restart</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => {this.setState({settingOpen: true})}}>
+                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                settings</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </Modal>
+            )
+
+    }
+
+    renderSetting(){
+        return (
+            <Modal
+                animationType={"slide"}
+                transparent={true}
+                visible={this.state.settingOpen}
+                style={{flex: 1}}
+            >
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
+                    <Text style={{fontSize: 64, fontWeight: '800'}}>Setting</Text>
+                    <TouchableOpacity onPress={() => {}}>
+                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                            gravity</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {}}>
+                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                            starter</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+        )
+
+    }
+
 ButtonClickCheckFunction = () =>{
 
     this.setState({paused: true});
