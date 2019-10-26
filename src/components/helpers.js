@@ -3,6 +3,7 @@
  */
 const types = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
 const colors = ['yellow', 'purple', 'red', 'blue', 'orange', 'green', 'skyblue']
+const solutions = [['IJLT']]
 
 export function createInit() {
   // maybe take an input later
@@ -28,6 +29,36 @@ export function createInit() {
       }
   }
   return matrix;
+}
+
+export function loadSolutions() {
+
+  const file = "../../solutions/setup1.txt";
+  var data = fs.readFileSync(file, 'utf8').split('\n');
+  solutions.push(data);
+
+}
+
+export function generateSolution() {
+
+  // if (solutions.length == 0) {
+  //   loadSolutions();
+  // }
+  const i = getRandomInt(0,solutions.length);
+  const j = getRandomInt(0,solutions[i].length);
+  var x = solutions[i][j];
+
+  return x;
+
+}
+
+export function createBlock(type) {
+  var object = {
+    type: type,
+    color: colors[getRandomInt(0,7)]
+  }
+  return object;
+
 }
 
 export function createRandomBlock() {
