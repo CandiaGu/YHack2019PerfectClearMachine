@@ -42,7 +42,9 @@ export default class Grid extends Component {
             url: "https://google.com",
             numRounds: 0,
             holdPiece: [{id:-1, type:'', color: ''}],
-            numPreviews: 5
+            numPreviews: 5,
+            paused: false,
+            settingOpen: false,
         }
 
         this.grid = [];
@@ -426,63 +428,65 @@ export default class Grid extends Component {
 
 
     tick() {
-        var points = [];
-        const {grid, w, h} = this.state;
-        for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
-            for(j = 9; j >= 0; j--) { // w is 10
-                if(belongs(this.checkColor(i,j))){
-                    points.push({i, j});
-                }
-            }
-        }
-
-        var can = this.canMoveDown(points);
-        if(can){
-            this.moveDown(points);
-        };
-
-        if(!can && this.grid[3].includes(1)) {
-            clearInterval(this.interval);
+        if(!this.state.paused){
+            var points = [];
+            const {grid, w, h} = this.state;
             for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
                 for(j = 9; j >= 0; j--) { // w is 10
                     if(belongs(this.checkColor(i,j))){
-                        // console.log('blue found on: ', i, j);
-                        this.changeColor(i, j, 'gray');
+                        points.push({i, j});
                     }
                 }
             }
-            this.setState({gameOver: true});
-            console.log('game over');
-            return
-        }
 
-        if(!can) {
-            for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
-                for(j = 9; j >= 0; j--) { // w is 10
-                    if(belongs(this.checkColor(i,j))){
-                        // console.log('blue found on: ', i, j);
-                        this.changeColor(i, j, 'gray');
+            var can = this.canMoveDown(points);
+            if(can){
+                this.moveDown(points);
+            };
 
-
+            if(!can && this.grid[3].includes(1)) {
+                clearInterval(this.interval);
+                for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
+                    for(j = 9; j >= 0; j--) { // w is 10
+                        if(belongs(this.checkColor(i,j))){
+                            // console.log('blue found on: ', i, j);
+                            this.changeColor(i, j, 'gray');
+                        }
                     }
                 }
+                this.setState({gameOver: true});
+                console.log('game over');
+                return
             }
-            //cant move down
 
-            this.can = true;
-            this.checkRowsToClear();
-            this.setState({numRounds: this.state.numRounds + 1}, () => {
-              if (this.state.numRounds >= 3 && this.state.init < 2) {
-                this.setState({gameOver:true});
-              } else if (this.state.numRounds >= 4 && this.state.init >= 2){
-                this.setState({gameOver:true});
-              } else {
-                this.loadNextBlock();
-              }
-            });
-        }
+            if(!can) {
+                for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
+                    for(j = 9; j >= 0; j--) { // w is 10
+                        if(belongs(this.checkColor(i,j))){
+                            // console.log('blue found on: ', i, j);
+                            this.changeColor(i, j, 'gray');
+
+
+                        }
+                    }
+                }
+                //cant move down
+
+                this.can = true;
+                this.checkRowsToClear();
+                this.setState({numRounds: this.state.numRounds + 1}, () => {
+                  if (this.state.numRounds >= 3 && this.state.init < 2) {
+                    this.setState({gameOver:true});
+                  } else if (this.state.numRounds >= 4 && this.state.init >= 2){
+                    this.setState({gameOver:true});
+                  } else {
+                    this.loadNextBlock();
+                  }
+                });
+          }
 
     }
+  }
 
     renderCells() {
         var size = 24;
@@ -651,9 +655,71 @@ export default class Grid extends Component {
             )
     }
 
+    renderPause(){
+        return (
+                <Modal
+                    animationType={"slide"}
+                    transparent={true}
+                    visible={this.state.paused&&!this.state.settingOpen}
+                    style={{flex: 1}}
+                >
+                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
+                        <Text style={{fontSize: 64, fontWeight: '800'}}>Paused</Text>
+                        <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
+                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                resume</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
+                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                restart</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => {this.setState({settingOpen: true})}}>
+                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                settings</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </Modal>
+            )
+
+    }
+
+    renderSetting(){
+        return (
+            <Modal
+                animationType={"slide"}
+                transparent={true}
+                visible={this.state.settingOpen}
+                style={{flex: 1}}
+            >
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
+                    <Text style={{fontSize: 64, fontWeight: '800'}}>Setting</Text>
+                    <TouchableOpacity onPress={() => {}}>
+                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                            gravity</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {}}>
+                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                            starter</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+        )
+
+    }
+
 ButtonClickCheckFunction = () =>{
 
+    this.setState({paused: true});
+
+  }
+
+HelpButtonClicked = () =>{
+
     Alert.alert("Button Clicked")
+    this.setState({paused: true});
 
   }
 
@@ -706,16 +772,13 @@ HoldPiece = () =>{
                       <View style={{width: '70%', height:60, backgroundColor: '#f76c6c', padding:10, borderBottomRightRadius: 10, alignItems: 'flex-end'}}>
                         <Text style={{fontWeight: '700', fontSize: 26, color: 'white'}}>PERFECT CLEAR</Text>
                       </View>
-                      <View style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', marginLeft:15, justifyContent: 'center', alignItems: 'center', borderRadius:10,}}>
+                      <TouchableOpacity style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', justifyContent: 'center', alignItems: 'center', borderRadius:10,}} onPress={ this.ButtonClickCheckFunction }>
                       <Text>||</Text>
-                      </View>
+                      </TouchableOpacity>
 
-
-                      <View style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', justifyContent: 'center', alignItems: 'center', borderRadius:10,}} >
-                      <TouchableOpacity onPress={ this.ButtonClickCheckFunction }>
+                      <TouchableOpacity style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', justifyContent: 'center', alignItems: 'center', borderRadius:10,}} onPress={ this.HelpButtonClicked }>
                       <Text>?</Text>
                       </TouchableOpacity>
-                      </View>
 
             </View>
 
@@ -737,6 +800,9 @@ HoldPiece = () =>{
                 </View>
                 {this.renderButtons()}
                 {this.renderStart()}
+                {this.renderPause()}
+                {this.renderSetting()}
+
             </View>
         )
     }
