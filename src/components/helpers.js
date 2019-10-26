@@ -50,6 +50,57 @@ export function createInit(type) {
           }
         }
     }
+  } else if (type == 2) {
+    for(i = 20; i < 24; i++) {
+        for(j = 0; j < 3; j++) {
+            matrix.push([i,j]);
+        }
+        if ( i == 20 ) {
+          for (j = 9; j > 7; j--){
+            matrix.push([i,j]);
+          }
+        }
+        if ( i == 21 || i == 23 ) {
+          for (j = 9; j > 6; j--){
+            matrix.push([i,j]);
+          }
+        }
+        if ( i == 22) {
+          for (j = 9; j > 5; j--){
+            matrix.push([i,j]);
+          }
+        }
+    }
+  } else if (type == 3) {
+    for(i = 20; i < 24; i++) {
+        for(j = 9; j > 6; j--) {
+            matrix.push([i,j]);
+        }
+        if ( i == 20 ) {
+          for (j = 0; j < 2; j++){
+            matrix.push([i,j]);
+          }
+        }
+        if ( i == 21 || i == 23 ) {
+          for (j = 0; j < 3; j++){
+            matrix.push([i,j]);
+          }
+        }
+        if ( i == 22) {
+          for (j = 0; j < 4; j++){
+            matrix.push([i,j]);
+          }
+        }
+    }
+  } else if (type == 4) {
+    for(i = 20; i < 24; i++) {
+        for(j = 0; j < 3; j++) {
+            matrix.push([i,j]);
+        }
+        for(j = 9; j > 6; j--) {
+            matrix.push([i,j]);
+        }
+    }
   }
 
   return matrix;
