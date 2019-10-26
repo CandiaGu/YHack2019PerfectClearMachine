@@ -14,7 +14,7 @@ export default class Main extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Grid w={10} h={24}/>
+                <Grid w={10} h={24} init={0}/>
             </View>
         )
     }
