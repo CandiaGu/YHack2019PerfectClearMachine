@@ -583,7 +583,7 @@ export default class Grid extends Component {
 
 
     renderStart() {
-            if (this.state.started) {
+            if (this.state.started && this.state.score < 4000) {
               return (
                   <Modal
                       animationType={"slide"}
@@ -605,7 +605,7 @@ export default class Grid extends Component {
                  </View>
                 </Modal>
               )
-            } else {
+            } else if ( this.state.score >= 4000 ){
               return (
                   <Modal
                       animationType={"slide"}
@@ -614,13 +614,19 @@ export default class Grid extends Component {
                       style={{flex: 1}}
                   >
                       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                          <Text style={{fontSize: 64, fontWeight: '800'}}>
-                              <Text style={{color: 'blue'}}>T</Text>
+                          <Text style={{fontSize: 32, fontWeight: '800'}}>
+                              <Text style={{color: 'blue'}}>P</Text>
                               <Text style={{color: 'orange'}}>E</Text>
-                              <Text style={{color: 'yellow'}}>T</Text>
-                              <Text style={{color: 'green'}}>R</Text>
-                              <Text style={{color: 'red'}}>I</Text>
-                              <Text style={{color: 'cyan'}}>S</Text>
+                              <Text style={{color: 'yellow'}}>R</Text>
+                              <Text style={{color: 'green'}}>F</Text>
+                              <Text style={{color: 'red'}}>E</Text>
+                              <Text style={{color: 'cyan'}}>C</Text>
+                              <Text style={{color: 'blue'}}>T</Text>
+                              <Text style={{color: 'orange'}}>C</Text>
+                              <Text style={{color: 'yellow'}}>L</Text>
+                              <Text style={{color: 'green'}}>E</Text>
+                              <Text style={{color: 'red'}}>A</Text>
+                              <Text style={{color: 'cyan'}}>R</Text>
                           </Text>
 
                           <TouchableOpacity onPress={() => {this.state.started ? this.tryAgain() : this.startGame()}}>
@@ -630,6 +636,30 @@ export default class Grid extends Component {
                       </View>
                   </Modal>
               )
+          } else {
+            return (<Modal
+                animationType={"slide"}
+                transparent={true}
+                visible={this.state.gameOver}
+                style={{flex: 1}}
+            >
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
+                    <Text style={{fontSize: 64, fontWeight: '800'}}>
+                        <Text style={{color: 'blue'}}>T</Text>
+                        <Text style={{color: 'orange'}}>E</Text>
+                        <Text style={{color: 'yellow'}}>T</Text>
+                        <Text style={{color: 'green'}}>R</Text>
+                        <Text style={{color: 'red'}}>I</Text>
+                        <Text style={{color: 'cyan'}}>S</Text>
+                    </Text>
+
+                    <TouchableOpacity onPress={() => {this.state.started ? this.tryAgain() : this.startGame()}}>
+                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                            {this.state.started ? 'TRY AGAIN' : 'START'}</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+        )
           }
     }
 
