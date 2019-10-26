@@ -13,7 +13,7 @@ TouchableOpacity
 
 import Cell from './cell';
 import Preview from './preview';
-import {belongs, createRandomBlock} from './helpers';
+import {belongs, createRandomBlock, createInit} from './helpers';
 import {rotate} from './rotation';
 
 export default class Grid extends Component {
@@ -65,26 +65,11 @@ export default class Grid extends Component {
     }
 
     initPerfectClear() {
-      for(i = 20; i < 24; i++) {
-          for(j = 0; j < 4; j++) {
-              this.changeColor(i, j, 'gray');
-          }
-          if ( i == 20 ) {
-            for (j = 9; j > 7; j--){
-              this.changeColor(i, j, 'gray');
-            }
-          }
-          if ( i == 21 || i == 23 ) {
-            for (j = 9; j > 6; j--){
-              this.changeColor(i, j, 'gray');
-            }
-          }
-          if ( i == 22) {
-            for (j = 9; j > 5; j--){
-              this.changeColor(i, j, 'gray');
-            }
-          }
+      x = createInit();
+      for (i = 0; i < x.length; i++){
+        this.changeColor(x[i][0], x[i][1], 'gray');
       }
+      console.log('Hmmm');
     }
 
     startGame() {
