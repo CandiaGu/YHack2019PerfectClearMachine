@@ -13,7 +13,7 @@ TouchableOpacity
 
 import Cell from './cell';
 import Preview from './preview';
-import {belongs, createRandomBlock, createInit, generateSolution, createBlock} from './helpers';
+import {belongs, createRandomBlock, createInit, generateSolution, createBlock, getRandomInt} from './helpers';
 import {rotate} from './rotation';
 
 export default class Grid extends Component {
@@ -23,11 +23,12 @@ export default class Grid extends Component {
             w: props.w,
             h: props.h,
             grid: [],
-            blocks: this.generateBlocks(),
+            blocks: this.generateBlocks(0),
             numBlocks: 5,
             score: 0,
             started: false,
-            gameOver: true
+            gameOver: true,
+            init: 0
         }
 
         this.grid = [];
@@ -64,7 +65,7 @@ export default class Grid extends Component {
     }
 
     initPerfectClear() {
-      x = createInit(2);
+      x = createInit(this.state.init);
       for (i = 0; i < x.length; i++){
         this.changeColor(x[i][0], x[i][1], 'gray');
       }
@@ -81,9 +82,11 @@ export default class Grid extends Component {
     }
 
     tryAgain() {
-        this.setState({gameOver: false, score: 0, blocks: this.generateBlocks()}, () => {
-            this.refresh();
-            this.startGame()
+        this.setState({init: getRandomInt(0,2)}, () => {
+          this.setState({gameOver: false, score: 0, blocks: this.generateBlocks(0)}, () => {
+              this.refresh();
+              this.startGame()
+          })
         });
     }
 
@@ -282,9 +285,14 @@ export default class Grid extends Component {
 
     }
 
-    generateBlocks() {
+    generateBlocks(x) {
+        var type = x;
+        if (this.state != null) {
+          type = this.state.init;
+        }
+        console.log(type)
         var blocks = [];
-        var solution = generateSolution();
+        var solution = generateSolution(type);
         for(i = 0; i < solution.length; i++) {
            blocks.push({id: i, ...createBlock(solution.charAt(i))});
         }

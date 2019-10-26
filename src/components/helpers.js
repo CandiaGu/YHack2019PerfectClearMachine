@@ -8,7 +8,7 @@ var sols = []
 
 export function createInit(type) {
   var matrix = [];
-  if (type == 1) {
+  if (type == 0) {
     for(i = 20; i < 24; i++) {
         for(j = 0; j < 4; j++) {
             matrix.push([i,j]);
@@ -29,7 +29,7 @@ export function createInit(type) {
           }
         }
     }
-  } else if (type == 2) {
+  } else if (type == 1) {
     for(i = 20; i < 24; i++) {
         for(j = 9; j > 5; j--) {
             matrix.push([i,j]);
@@ -55,14 +55,15 @@ export function createInit(type) {
   return matrix;
 }
 
-export function generateSolution() {
+export function generateSolution(type) {
 
   if (sols.length == 0) {
     sols = loadSolutions();
   }
-  const i = getRandomInt(0,sols.length);
-  const j = getRandomInt(0,sols[i].length);
-  var x = sols[i][j];
+  console.log(sols.length);
+  console.log(sols[type]);
+  const j = getRandomInt(0,sols[type].length);
+  var x = sols[type][j];
 
   return x;
 
@@ -122,7 +123,7 @@ export function rotate(array) {
 //     return ret;
 // }
 
-function getRandomInt(min, max) {
+export function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
