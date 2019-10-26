@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Image } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
+import Main from './src/main';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>hello</Text>
-      <Image source={require('./assets/loading.png')}/>
+        <Main />
     </View>
   );
 }
