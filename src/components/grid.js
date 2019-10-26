@@ -47,7 +47,9 @@ export default class Grid extends Component {
             url: "https://google.com",
             numRounds: 0,
             holdPiece: [{id:-1, type:'', color: ''}],
-            numPreviews: 5
+            numPreviews: 5,
+            paused: false,
+            settingOpen: false,
         }
 
         this.grid = [];
@@ -435,24 +437,9 @@ export default class Grid extends Component {
 
 
     tick() {
-      if(!this.state.paused){
-        var points = [];
-        const {grid, w, h} = this.state;
-        for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
-            for(j = 9; j >= 0; j--) { // w is 10
-                if(belongs(this.checkColor(i,j))){
-                    points.push({i, j});
-                }
-            }
-        }
-
-        var can = this.canMoveDown(points);
-        if(can){
-            this.moveDown(points);
-        };
-
-        if(!can && this.grid[3].includes(1)) {
-            clearInterval(this.interval);
+        if(!this.state.paused){
+            var points = [];
+            const {grid, w, h} = this.state;
             for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
                 for(j = 9; j >= 0; j--) { // w is 10
                     if(belongs(this.checkColor(i,j))){
@@ -494,21 +481,20 @@ export default class Grid extends Component {
                 }
                 //cant move down
 
-            this.can = true;
-            this.checkRowsToClear();
-            this.setState({numRounds: this.state.numRounds + 1}, () => {
-              if (this.state.numRounds >= 3 && this.state.init < 2) {
-                this.setState({gameOver:true});
-              } else if (this.state.numRounds >= 4 && this.state.init >= 2){
-                this.setState({gameOver:true});
-              } else {
-                this.loadNextBlock();
-              }
-            });
-        }
+                this.can = true;
+                this.checkRowsToClear();
+                this.setState({numRounds: this.state.numRounds + 1}, () => {
+                  if (this.state.numRounds >= 3 && this.state.init < 2) {
+                    this.setState({gameOver:true});
+                  } else if (this.state.numRounds >= 4 && this.state.init >= 2){
+                    this.setState({gameOver:true});
+                  } else {
+                    this.loadNextBlock();
+                  }
+                });
+          }
 
     }
-  }
   }
 
     renderCells() {
