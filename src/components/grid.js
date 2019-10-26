@@ -64,7 +64,7 @@ export default class Grid extends Component {
     }
 
     initPerfectClear() {
-      x = createInit();
+      x = createInit(2);
       for (i = 0; i < x.length; i++){
         this.changeColor(x[i][0], x[i][1], 'gray');
       }
