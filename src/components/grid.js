@@ -333,7 +333,9 @@ export default class Grid extends Component {
         for(i = 0; i < solution.length; i++) {
            blocks.push({id: i, ...createBlock(solution.charAt(i))});
         }
-        blocks.push({id: i, ...createRandomBlock()});
+        if (blocks.length < 5) {
+          blocks.push({id: i, ...createRandomBlock()});
+        }
         return blocks;
     }
 
@@ -496,7 +498,9 @@ export default class Grid extends Component {
             this.can = true;
             this.checkRowsToClear();
             this.setState({numRounds: this.state.numRounds + 1}, () => {
-              if (this.state.numRounds > 3) {
+              if (this.state.numRounds >= 3 && this.state.init < 2) {
+                this.setState({gameOver:true});
+              } else if (this.state.numRounds >= 4 && this.state.init >= 2){
                 this.setState({gameOver:true});
               } else {
                 this.loadNextBlock();
@@ -588,7 +592,7 @@ export default class Grid extends Component {
                   <Modal
                       animationType={"slide"}
                       transparent={false}
-                      visible={this.state.numRounds >= 3}
+                      visible={this.state.gameOver}
                       style={{flex: 1}}
                   >
                   <View style={{ flex: 1}}>
