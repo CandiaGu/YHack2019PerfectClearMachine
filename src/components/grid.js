@@ -44,10 +44,11 @@ export default class Grid extends Component {
         this.grid = [];
         this.currentBlock = 'J';
         this.rotation = 0;
-        this.speed = 450;
+        this.gravity = 1000;
         this.changeColor = this.changeColor.bind(this);
         this.checkColor = this.checkColor.bind(this);
         this.held = false;
+        this.movedPiece = false; // whether user moved piece on last tick to delay lock
 
         this.typeColorDict = {'I':'skyblue', 'O':'yellow', 'T':'purple', 'S':'green', 'Z':'red', 'J':'blue', 'L':'orange'};
 
@@ -83,7 +84,7 @@ export default class Grid extends Component {
         clearInterval(this.interval);
         this.interval = setInterval(() => {
             this.tick()
-        }, this.speed)
+        }, this.gravity)
     }
 
     tryAgain() {
@@ -120,12 +121,15 @@ export default class Grid extends Component {
         this.refs[id].changeColor(color);
     }
 
-    down() {
+    hardDrop() {
         clearInterval(this.interval);
-        this.speed = 10;
         this.interval = setInterval(() => {
             this.tick()
-        }, this.speed)
+        }, 1)
+    }
+
+    softDrop() {
+        this.tick();
     }
 
     // dir: left = -1, right = 1
@@ -154,6 +158,7 @@ export default class Grid extends Component {
             shift = srs(this.currentBlock, this.rotation, dir, test);
             srotated = rotated.map(p => [p[0]-shift[1], p[1]+shift[0]]);
             if(this.canRotate(srotated)) {
+                movedPiece = true;
                 this.rotation = (this.rotation + dir + 4) % 4;
                 // console.log('valid rotation');
                 srotated.map((point) => {
@@ -206,6 +211,7 @@ export default class Grid extends Component {
     }
 
     shift(points, direction) {
+        movedPiece = true;
         var shift = direction == 'left' ? -1 : 1;
         if (direction == 'right') {
             points = points.reverse();
@@ -288,11 +294,10 @@ export default class Grid extends Component {
     }
 
     loadNextBlock() {
-        this.speed = 450;
         clearInterval(this.interval);
         this.interval = setInterval(() => {
             this.tick()
-        }, this.speed);
+        }, this.gravity);
 
 
         var {blocks} = this.state;
@@ -428,7 +433,7 @@ export default class Grid extends Component {
                     }
                 }
             }
-
+            
             var can = this.canMoveDown(points);
             if(can){
                 this.moveDown(points);
@@ -450,11 +455,16 @@ export default class Grid extends Component {
             }
 
             if(!can) {
+                if (movedPiece) {
+                  movedPiece = false;
+                  return;
+                }
                 for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
                     for(j = 9; j >= 0; j--) { // w is 10
                         if(belongs(this.checkColor(i,j))){
                             // console.log('blue found on: ', i, j);
                             this.changeColor(i, j, 'gray');
+
 
 
                         }
@@ -524,8 +534,12 @@ export default class Grid extends Component {
                 <TouchableOpacity onPress={() => this.shiftCells('right')}>
                     <Image style={styles.img} source={require('../img/right-filled.png')}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => this.down()}>
+                <TouchableOpacity onPress={() => this.softDrop()}>
                     <Image style={styles.img} source={require('../img/down_arrow.png')}/>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => this.hardDrop()}>
+                    <Image style={styles.img} source={require('../img/up_arrow.png')}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => this.rotate(-1)}>
