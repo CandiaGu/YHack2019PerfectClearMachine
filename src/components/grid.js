@@ -13,12 +13,19 @@ Modal,
 TouchableOpacity
 } from 'react-native';
 
+import CreateBlock from './create_block';
+
+
 import Cell from './cell';
 import Preview from './preview';
 import {belongs, createRandomBlock, createInit, generateSolution, createBlock, getRandomInt} from './helpers';
 import {rotate} from './rotation';
 
+
 export default class Grid extends Component {
+
+
+
     constructor(props) {
         super(props);
         this.state = {
@@ -33,7 +40,9 @@ export default class Grid extends Component {
             solutionVisible: false,
             init: props.init,
             url: "https://google.com",
-            numRounds: 0
+            numRounds: 0,
+            holdPiece: [{id:-1, type:'', color: ''}],
+            numPreviews: 5
         }
 
         this.grid = [];
@@ -42,6 +51,10 @@ export default class Grid extends Component {
         this.speed = 450;
         this.changeColor = this.changeColor.bind(this);
         this.checkColor = this.checkColor.bind(this);
+        this.held = false;
+
+        this.typeColorDict = {'I':'skyblue', 'O':'yellow', 'T':'purple', 'S':'green', 'Z':'red', 'J':'blue', 'L':'orange'};
+
 
 
 
@@ -77,7 +90,7 @@ export default class Grid extends Component {
     }
 
     startGame() {
-        this.setState({gameOver: false, started: true, score: 0, numRounds: 0, url: this.url},
+        this.setState({gameOver: false, started: true, score: 0, numRounds: 0, url: this.url, holdPiece: [{id:-1, type:'', color: ''}]},
           () => this.loadNextBlock());
         clearInterval(this.interval);
         this.initPerfectClear();
@@ -87,7 +100,7 @@ export default class Grid extends Component {
     }
 
     tryAgain() {
-        this.setState({gameOver: false, score: 0, blocks: this.generateBlocks(0)}, () => {
+        this.setState({gameOver: false, score: 0, blocks: this.generateBlocks(0), }, () => {
             this.refresh();
             this.startGame()
         });
@@ -99,6 +112,7 @@ export default class Grid extends Component {
                 this.changeColor(i, j, 'white');
             }
         }
+        //this.state.holdPiece = null;
     }
 
     checkColor(i,j) {
@@ -234,6 +248,53 @@ export default class Grid extends Component {
 
     }
 
+
+    loadNextBlockHelper(type){
+
+        this.currentBlock = type;
+        var blockColor = this.typeColorDict[type];
+        this.rotation = 0;
+        if(type == 'I') {
+            this.changeColor(3, 3, blockColor);
+            this.changeColor(3, 4, blockColor);
+            this.changeColor(3, 5, blockColor);
+            this.changeColor(3, 6, blockColor);
+        } else if(type == 'O') {
+            this.changeColor(2, 4, blockColor);
+            this.changeColor(2, 5, blockColor);
+            this.changeColor(3, 4, blockColor);
+            this.changeColor(3, 5, blockColor);
+        } else if(type == 'T') {
+            this.changeColor(2, 4, blockColor);
+            this.changeColor(3, 3, blockColor);
+            this.changeColor(3, 4, blockColor);
+            this.changeColor(3, 5, blockColor);
+        } else if(type == 'S') {
+            this.changeColor(2, 4, blockColor);
+            this.changeColor(2, 5, blockColor);
+            this.changeColor(3, 3, blockColor);
+            this.changeColor(3, 4, blockColor);
+        } else if(type == 'Z') {
+            this.changeColor(2, 3, blockColor);
+            this.changeColor(2, 4, blockColor);
+            this.changeColor(3, 4, blockColor);
+            this.changeColor(3, 5, blockColor);
+        } else if(type == 'J') {
+            this.changeColor(2, 3, blockColor);
+            this.changeColor(3, 3, blockColor);
+            this.changeColor(3, 4, blockColor);
+            this.changeColor(3, 5, blockColor);
+        } else if(type == 'L') {
+            this.changeColor(2, 5, blockColor);
+            this.changeColor(3, 3, blockColor);
+            this.changeColor(3, 4, blockColor);
+            this.changeColor(3, 5, blockColor);
+        }
+
+        var {blocks} = this.state;
+        this.generateBlocks(blocks);
+    }
+
     loadNextBlock() {
         this.speed = 450;
         clearInterval(this.interval);
@@ -244,57 +305,18 @@ export default class Grid extends Component {
 
         var {blocks} = this.state;
         var next = blocks.splice(0,1)[0];
-        this.currentBlock = next.type;
-        this.rotation = 0;
-        // console.log(next);
-        if(next.type == 'I') {
-            this.changeColor(3, 3, next.color);
-            this.changeColor(3, 4, next.color);
-            this.changeColor(3, 5, next.color);
-            this.changeColor(3, 6, next.color);
-        } else if(next.type == 'O') {
-            this.changeColor(2, 4, next.color);
-            this.changeColor(2, 5, next.color);
-            this.changeColor(3, 4, next.color);
-            this.changeColor(3, 5, next.color);
-        } else if(next.type == 'T') {
-            this.changeColor(2, 4, next.color);
-            this.changeColor(3, 3, next.color);
-            this.changeColor(3, 4, next.color);
-            this.changeColor(3, 5, next.color);
-        } else if(next.type == 'S') {
-            this.changeColor(2, 4, next.color);
-            this.changeColor(2, 5, next.color);
-            this.changeColor(3, 3, next.color);
-            this.changeColor(3, 4, next.color);
-        } else if(next.type == 'Z') {
-            this.changeColor(2, 3, next.color);
-            this.changeColor(2, 4, next.color);
-            this.changeColor(3, 4, next.color);
-            this.changeColor(3, 5, next.color);
-        } else if(next.type == 'J') {
-            this.changeColor(2, 3, next.color);
-            this.changeColor(3, 3, next.color);
-            this.changeColor(3, 4, next.color);
-            this.changeColor(3, 5, next.color);
-        } else if(next.type == 'L') {
-            this.changeColor(2, 5, next.color);
-            this.changeColor(3, 3, next.color);
-            this.changeColor(3, 4, next.color);
-            this.changeColor(3, 5, next.color);
-        }
-        blocks.push({id: next.id + 5, ...createRandomBlock()});
-        this.setState({blocks});
+
+        this.held = false;
+
+        this.loadNextBlockHelper(next.type);
+
 
     }
 
-    generateBlocks(x) {
-        var type = x;
-        if (this.state != null) {
-          type = this.state.init;
-        }
+    generateBlocks() {
+
         var blocks = [];
-        var solution_url = generateSolution(type);
+        var solution_url = generateSolution(this.state.init);
         var solution = solution_url[0];
         var url = solution_url[1];
         this.url = url;
@@ -357,6 +379,26 @@ export default class Grid extends Component {
         if(row_was_cleared) {
             this.setState({score: this.state.score + 1000 * num_rows_cleared});
         }
+    }
+
+    clearCurrentPiece(){
+        var points = [];
+        const {grid, w, h} = this.state;
+        for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
+            for(j = 9; j >= 0; j--) { // w is 10
+                if(belongs(this.checkColor(i,j))){
+                    points.push({i, j});
+                }
+            }
+        }
+        points.map(point => {
+            if(this.checkColor(point.i, point.j) != 'white' && this.checkColor(point.i, point.j) != 'gray') {
+                //active piece
+                this.changeColor(point.i, point.j, 'white');
+            }
+
+        });
+
     }
 
     canMoveDown(points) {
@@ -609,15 +651,83 @@ export default class Grid extends Component {
             )
     }
 
+ButtonClickCheckFunction = () =>{
+
+    Alert.alert("Button Clicked")
+
+  }
+
+HoldPiece = () =>{
+
+    if(!this.held){
+
+        var newholdPiece = this.state.holdPiece;
+
+        if(newholdPiece[0].id==-1){
+            newholdPiece = [{id:0, type:this.currentBlock, color: this.typeColorDict[this.currentBlock]}];
+            console.log("holding:" + newholdPiece);
+
+            var {blocks} = this.state;
+            var next = blocks.splice(0,1)[0];
+
+            this.currentBlock = next.type;
+
+        }
+        else{
+            //TODO: allow only one hold press
+            var temp = newholdPiece[0].type;
+            newholdPiece =[{id:(newholdPiece[0].id+1)%2, type:this.currentBlock, color: this.typeColorDict[this.currentBlock]}];
+            console.log("holding2:" + newholdPiece[0].type);
+            this.currentBlock = temp;
+        }
+
+
+        this.setState({holdPiece:newholdPiece});
+
+        this.clearCurrentPiece();
+
+        this.loadNextBlockHelper(this.currentBlock);
+        this.held = true;
+    }
+
+  }
+
+  renderHoldView(){
+        if(this.state.holdPiece[0].id!='-1'){
+            return <Preview blocks={this.state.holdPiece} />
+        }
+  }
+
     render() {
         return (
-            <View style={{flex: 1, justifyContent: 'space-around'}}>
-                <View style={{paddingTop: 40, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{fontWeight: '700', fontSize: 26}}>REACT-NATIVE-TETRIS</Text>
-                    <Text style={{paddingTop: 10, fontSize: 16}}>Score: {this.state.score}</Text>
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                    <View style={{backgroundColor: 'white'}}>
+            <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between',}}>
+
+            <View style={{flex: 1, flexDirection: 'row'}}>
+                      <View style={{width: '70%', height:60, backgroundColor: '#f76c6c', padding:10, borderBottomRightRadius: 10, alignItems: 'flex-end'}}>
+                        <Text style={{fontWeight: '700', fontSize: 26, color: 'white'}}>PERFECT CLEAR</Text>
+                      </View>
+                      <View style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', marginLeft:15, justifyContent: 'center', alignItems: 'center', borderRadius:10,}}>
+                      <Text>||</Text>
+                      </View>
+
+
+                      <View style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', justifyContent: 'center', alignItems: 'center', borderRadius:10,}} >
+                      <TouchableOpacity onPress={ this.ButtonClickCheckFunction }>
+                      <Text>?</Text>
+                      </TouchableOpacity>
+                      </View>
+
+            </View>
+
+                <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: '#364785', padding: 60, borderTopRightRadius: 10, borderTopLeftRadius:10}}>
+                    <View >
+                        <Text>HOLD</Text>
+                        <TouchableOpacity style={{backgroundColor: 'white', width: 40, height: 40}} onPress={ this.HoldPiece }>
+                            {this.renderHoldView()}
+                        </TouchableOpacity>
+
+                    </View>
+                    <View style={{backgroundColor: '#24305e'}}>
                         {this.renderCells()}
                     </View>
                     <View style={{marginLeft: 20, alignItems: 'center'}}>
