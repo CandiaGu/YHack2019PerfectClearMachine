@@ -17,7 +17,7 @@ import CreateBlock from './create_block';
 
 import Cell from './cell';
 import Preview from './preview';
-import {belongs, createRandomBag, createRandomBlock, createInit, generateSolution, createBlock} from './helpers';
+import {belongs, createRandomBag, createRandomBlock, createInit, generateSolution, createBlock, getRandomInt} from './helpers';
 import {rotate, srs} from './rotation';
 
 
@@ -39,6 +39,8 @@ export default class Grid extends Component {
             gameOver: true,
             paused: false,
             settingOpen: false,
+            numBlocks: 5,
+            init: 0
         }
 
         this.grid = [];
@@ -79,7 +81,7 @@ export default class Grid extends Component {
     }
 
     initPerfectClear() {
-      x = createInit(2);
+      x = createInit(this.state.init);
       for (i = 0; i < x.length; i++){
         this.changeColor(x[i][0], x[i][1], 'gray');
       }
@@ -314,9 +316,14 @@ export default class Grid extends Component {
 
     }
 
-    generateBlocks() {
+    generateBlocks(x) {
+        var type = x;
+        if (this.state != null) {
+          type = this.state.init;
+        }
+        console.log(type)
         var blocks = [];
-        var solution = generateSolution();
+        var solution = generateSolution(type);
         for(i = 0; i < solution.length; i++) {
            blocks.push({id: i, ...createBlock(solution.charAt(i))});
         }
