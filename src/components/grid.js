@@ -33,6 +33,7 @@ export default class Grid extends Component {
 
         this.grid = [];
         this.currentBlock = 'J';
+        this.holdPiece = '';
         this.rotation = 0;
         this.speed = 450;
         this.changeColor = this.changeColor.bind(this);
@@ -512,12 +513,30 @@ ButtonClickCheckFunction = () =>{
  
   }
 
+HoldPiece = () =>{
+ 
+    Alert.alert("HoldPiece");
+    if(this.holdPiece==''){
+        this.holdPiece = this.currentBlock;
+        console.log("holding:" + this.holdPiece);
+
+    }
+    else{
+        var temp = this.holdPiece;
+        this.holdPiece = this.currentBlock;
+        console.log("holding2:" + this.holdPiece);
+        this.currentBlock = temp;
+    }
+
+ 
+  }
+
     render() {
         return (
-            <View style={{flex: 1 }}>
+            <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between',}}>
 
             <View style={{flex: 1, flexDirection: 'row'}}>
-                      <View style={{width: '70%', backgroundColor: '#f76c6c', padding:10, borderBottomRightRadius: 10}}>
+                      <View style={{width: '70%', height:60, backgroundColor: '#f76c6c', padding:10, borderBottomRightRadius: 10, alignItems: 'flex-end'}}>
                         <Text style={{fontWeight: '700', fontSize: 26, color: 'white'}}>PERFECT CLEAR</Text>
                       </View>
                       <View style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', marginLeft:15, justifyContent: 'center', alignItems: 'center', borderRadius:10,}}>
@@ -533,7 +552,13 @@ ButtonClickCheckFunction = () =>{
 
             </View>
 
-                <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: '#364785', marginTop: 10}}>
+                <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: '#364785', padding: 60, borderTopRightRadius: 10, borderTopLeftRadius:10}}>
+                    <View >
+                        <Text>HOLD</Text>
+                        <TouchableOpacity style={{backgroundColor: 'white', width: 40, height: 40}} onPress={ this.HoldPiece }>
+                        </TouchableOpacity>
+
+                    </View>
                     <View style={{backgroundColor: '#24305e'}}>
                         {this.renderCells()}
                     </View>
@@ -543,8 +568,8 @@ ButtonClickCheckFunction = () =>{
                     </View>
                 </View>
                 {this.renderButtons()}
-
                 {this.renderStart()}
+
             </View>
         )
     }

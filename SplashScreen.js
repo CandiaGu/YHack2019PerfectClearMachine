@@ -7,7 +7,7 @@ class SplashScreen extends React.Component {
       //calculate stuff here probs?
       setTimeout(
         () => { resolve('result') },
-        1000
+        500
       )
     )
   }
