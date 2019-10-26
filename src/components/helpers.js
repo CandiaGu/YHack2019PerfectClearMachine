@@ -1,9 +1,10 @@
 /**
  * Created by ggoma on 2016. 11. 23..
  */
+import {loadSolutions} from './solutions';
 const types = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
 const colors = ['yellow', 'purple', 'red', 'blue', 'orange', 'green', 'skyblue']
-const solutions = [['IJLT']]
+var sols = []
 
 export function createInit() {
   // maybe take an input later
@@ -31,22 +32,14 @@ export function createInit() {
   return matrix;
 }
 
-export function loadSolutions() {
-
-  const file = "../../solutions/setup1.txt";
-  var data = fs.readFileSync(file, 'utf8').split('\n');
-  solutions.push(data);
-
-}
-
 export function generateSolution() {
 
-  // if (solutions.length == 0) {
-  //   loadSolutions();
-  // }
-  const i = getRandomInt(0,solutions.length);
-  const j = getRandomInt(0,solutions[i].length);
-  var x = solutions[i][j];
+  if (sols.length == 0) {
+    sols = loadSolutions();
+  }
+  const i = getRandomInt(0,sols.length);
+  const j = getRandomInt(0,sols[i].length);
+  var x = sols[i][j];
 
   return x;
 
