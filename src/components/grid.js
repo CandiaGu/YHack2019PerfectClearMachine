@@ -14,8 +14,8 @@ Alert
 
 import Cell from './cell';
 import Preview from './preview';
-import {belongs, createRandomBlock} from './helpers';
-import {rotate} from './rotation';
+import {belongs, createRandomBag} from './helpers';
+import {rotate, srs} from './rotation';
 
 export default class Grid extends Component {
     constructor(props) {
@@ -24,8 +24,8 @@ export default class Grid extends Component {
             w: props.w,
             h: props.h,
             grid: [],
-            blocks: this.generateBlocks(),
-            numBlocks: 5,
+            blocks: [],
+            numPreviews: 5,
             score: 0,
             started: false,
             gameOver: true
@@ -74,7 +74,7 @@ export default class Grid extends Component {
     }
 
     tryAgain() {
-        this.setState({gameOver: false, score: 0}, () => {
+        this.setState({gameOver: false, score: 0, numPreviews: 5}, () => {
             this.refresh();
             this.startGame()
         });
@@ -114,13 +114,13 @@ export default class Grid extends Component {
         }, this.speed)
     }
 
-    rotate() {
+    // dir: left = -1, right = 1
+    rotate(dir) {
 
         if(this.grid[3].includes(1)) {
             return
         }
 
-        this.rotation += 1;
         var color;
         var points = [];
         var previous = [];
@@ -135,18 +135,23 @@ export default class Grid extends Component {
             }
         }
 
-        var rotated = rotate(this.currentBlock, points, this.rotation);
-        if(this.canRotate(rotated)) {
-            // console.log('valid rotation');
-            rotated.map((point) => {
-                this.changeColor(point[0], point[1], color);
-            });
-        } else {
-            // console.log('invalid rotation');
-            previous.map((point) => {
-                this.changeColor(point[0], point[1], color);
-            });
+        var rotated = rotate(this.currentBlock, points, this.rotation, dir);
+        for (test = 0; test < 5; test++) {
+            shift = srs(this.currentBlock, this.rotation, dir, test);
+            srotated = rotated.map(p => [p[0]-shift[1], p[1]+shift[0]]);
+            if(this.canRotate(srotated)) {
+                this.rotation = (this.rotation + dir + 4) % 4;
+                // console.log('valid rotation');
+                srotated.map((point) => {
+                    this.changeColor(point[0], point[1], color);
+                });
+                return;
+            }
         }
+        // console.log('invalid rotation');
+        previous.map((point) => {
+            this.changeColor(point[0], point[1], color);
+        });
 
     }
 
@@ -270,17 +275,24 @@ export default class Grid extends Component {
             this.changeColor(3, 4, next.color);
             this.changeColor(3, 5, next.color);
         }
-        blocks.push({id: next.id + 5, ...createRandomBlock()});
-        this.setState({blocks});
+        this.generateBlocks(blocks);
 
     }
 
-    generateBlocks() {
-        var blocks = [];
-        for(i = 0; i < 5; i++) {
-            blocks.push({id: i, ...createRandomBlock()});
+    generateBlocks(blocks) {
+        var {blocks, numPreviews} = this.state;
+        numBlocks = blocks.length;
+        if (numBlocks < numPreviews) {
+            while (numBlocks < numPreviews) {
+                bag = createRandomBag();
+                for(i = 0; i < 7; i++) {
+                    id = blocks.length == 0 ? 0 : blocks[blocks.length-1].id+1;
+                    blocks.push({id: id, ...bag[i]});
+                }
+                numBlocks += 7;
+            }
         }
-        return blocks;
+        this.setState({blocks});
     }
 
     toString() {
@@ -317,7 +329,7 @@ export default class Grid extends Component {
         var row_was_cleared = false;
         var num_rows_cleared = 0;
         var rows_to_clear = [];
-        for (i = 23; i >= 4; i--) {
+        for (i = 4; i <= 23; i++) {
             if(!this.grid[i].includes(0)) {
                 console.log('adding row', i);
                 rows_to_clear.push(i);
@@ -360,7 +372,6 @@ export default class Grid extends Component {
 
 
     tick() {
-
         var points = [];
         const {grid, w, h} = this.state;
         for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
@@ -469,8 +480,12 @@ export default class Grid extends Component {
                     <Image style={styles.img} source={require('../img/down_arrow.png')}/>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => this.rotate()}>
+                <TouchableOpacity onPress={() => this.rotate(-1)}>
                     <Image style={styles.img} source={require('../img/rotate_arrow.png')}/>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => this.rotate(1)}>
+                    <Image style={styles.img} source={require('../img/rotate_right_arrow.png')}/>
                 </TouchableOpacity>
 
 
@@ -564,7 +579,7 @@ HoldPiece = () =>{
                     </View>
                     <View style={{marginLeft: 20, alignItems: 'center'}}>
                         <Text style={{fontSize: 16, fontWeight: '600'}}>NEXT</Text>
-                        <Preview blocks={this.state.blocks}/>
+                        <Preview blocks={this.state.blocks.slice(0, this.state.numPreviews)}/>
                     </View>
                 </View>
                 {this.renderButtons()}
