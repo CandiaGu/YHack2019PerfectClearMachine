@@ -23,6 +23,7 @@ import {belongs, createRandomBag, createRandomBlock, createInit, generateSolutio
 import {rotate, srs} from './rotation';
 
 
+
 export default class Grid extends Component {
 
 
@@ -42,9 +43,11 @@ export default class Grid extends Component {
             paused: false,
             settingOpen: false,
             numBlocks: 5,
-            init: props.init,         
+            init: props.init,
             url: "https://google.com",
-            numRounds: 0
+            numRounds: 0,
+            holdPiece: [{id:-1, type:'', color: ''}],
+            numPreviews: 5
         }
 
         this.grid = [];
@@ -63,7 +66,7 @@ export default class Grid extends Component {
     }
 
     componentDidMount() {
-        this.setState({blocks: this.generateBlocks(0)}, () => this.createGrid());
+        this.setState({blocks: this.generateBlocks()}, () => this.createGrid());
     }
 
     createGrid() {
@@ -92,7 +95,7 @@ export default class Grid extends Component {
     }
 
     startGame() {
-        this.setState({gameOver: false, started: true, score: 0, numRounds: 0, url: this.url},
+        this.setState({gameOver: false, started: true, score: 0, numRounds: 0, url: this.url, holdPiece: [{id:-1, type:'', color: ''}]},
           () => this.loadNextBlock());
         clearInterval(this.interval);
         this.initPerfectClear();
@@ -297,9 +300,8 @@ export default class Grid extends Component {
             this.changeColor(3, 4, blockColor);
             this.changeColor(3, 5, blockColor);
         }
-
         var {blocks} = this.state;
-        this.generateBlocks(blocks);
+        this.setState({blocks});
     }
 
     loadNextBlock() {
@@ -320,13 +322,10 @@ export default class Grid extends Component {
 
     }
 
-    generateBlocks(x) {
-        var type = x;
-        if (this.state != null) {
-          type = this.state.init;
-        }
+    generateBlocks() {
+
         var blocks = [];
-        var solution_url = generateSolution(type);
+        var solution_url = generateSolution(this.state.init);
         var solution = solution_url[0];
         var url = solution_url[1];
         this.url = url;
