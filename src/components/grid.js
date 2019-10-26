@@ -14,7 +14,7 @@ TouchableOpacity
 import Cell from './cell';
 import Preview from './preview';
 import {belongs, createRandomBlock} from './helpers';
-import {rotate} from './rotation';
+import {rotate, srs} from './rotation';
 
 export default class Grid extends Component {
     constructor(props) {
@@ -134,18 +134,22 @@ export default class Grid extends Component {
         }
 
         var rotated = rotate(this.currentBlock, points, this.rotation, dir);
-        if(this.canRotate(rotated)) {
-            this.rotation = (this.rotation + dir + 4) % 4;
-            // console.log('valid rotation');
-            rotated.map((point) => {
-                this.changeColor(point[0], point[1], color);
-            });
-        } else {
-            // console.log('invalid rotation');
-            previous.map((point) => {
-                this.changeColor(point[0], point[1], color);
-            });
+        for (test = 0; test < 5; test++) {
+            shift = srs(this.currentBlock, this.rotation, dir, test);
+            srotated = rotated.map(p => [p[0]-shift[1], p[1]+shift[0]]);
+            if(this.canRotate(srotated)) {
+                this.rotation = (this.rotation + dir + 4) % 4;
+                // console.log('valid rotation');
+                srotated.map((point) => {
+                    this.changeColor(point[0], point[1], color);
+                });
+                return;
+            }
         }
+        // console.log('invalid rotation');
+        previous.map((point) => {
+            this.changeColor(point[0], point[1], color);
+        });
 
     }
 
