@@ -8,7 +8,8 @@ StyleSheet,
 Image,
 Text,
 Modal,
-TouchableOpacity
+TouchableOpacity,
+Alert
 } from 'react-native';
 
 import Cell from './cell';
@@ -520,15 +521,35 @@ export default class Grid extends Component {
             )
     }
 
+ButtonClickCheckFunction = () =>{
+ 
+    Alert.alert("Button Clicked")
+ 
+  }
+
     render() {
         return (
-            <View style={{flex: 1, justifyContent: 'space-around'}}>
-                <View style={{paddingTop: 40, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{fontWeight: '700', fontSize: 26}}>REACT-NATIVE-TETRIS</Text>
-                    <Text style={{paddingTop: 10, fontSize: 16}}>Score: {this.state.score}</Text>
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                    <View style={{backgroundColor: 'white'}}>
+            <View style={{flex: 1 }}>
+
+            <View style={{flex: 1, flexDirection: 'row'}}>
+                      <View style={{width: '70%', backgroundColor: '#f76c6c', padding:10, borderBottomRightRadius: 10}}>
+                        <Text style={{fontWeight: '700', fontSize: 26, color: 'white'}}>PERFECT CLEAR</Text>
+                      </View>
+                      <View style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', marginLeft:15, justifyContent: 'center', alignItems: 'center', borderRadius:10,}}>
+                      <Text>||</Text>
+                      </View>
+
+                      
+                      <View style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', justifyContent: 'center', alignItems: 'center', borderRadius:10,}} >
+                      <TouchableOpacity onPress={ this.ButtonClickCheckFunction }>
+                      <Text>?</Text>
+                      </TouchableOpacity>
+                      </View>
+
+            </View>
+
+                <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: '#364785', marginTop: 10}}>
+                    <View style={{backgroundColor: '#24305e'}}>
                         {this.renderCells()}
                     </View>
                     <View style={{marginLeft: 20, alignItems: 'center'}}>
