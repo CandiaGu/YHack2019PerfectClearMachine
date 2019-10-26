@@ -41,6 +41,8 @@ export default class Grid extends Component {
             settingOpen: false,
             numBlocks: 5,
             init: props.init
+            url: "https://google.com",
+            numRounds: 0
         }
 
         this.grid = [];
@@ -59,7 +61,7 @@ export default class Grid extends Component {
     }
 
     componentDidMount() {
-        this.createGrid();
+        this.setState({blocks: this.generateBlocks(0)}, () => this.createGrid());
     }
 
     createGrid() {
@@ -88,8 +90,8 @@ export default class Grid extends Component {
     }
 
     startGame() {
-        this.setState({gameOver: false, started: true, score: 0});
-        this.loadNextBlock();
+        this.setState({gameOver: false, started: true, score: 0, numRounds: 0, url: this.url},
+          () => this.loadNextBlock());
         clearInterval(this.interval);
         this.initPerfectClear();
         this.interval = setInterval(() => {
@@ -322,7 +324,10 @@ export default class Grid extends Component {
           type = this.state.init;
         }
         var blocks = [];
-        var solution = generateSolution(type);
+        var solution_url = generateSolution(type);
+        var solution = solution_url[0];
+        var url = solution_url[1];
+        this.url = url;
         for(i = 0; i < solution.length; i++) {
            blocks.push({id: i, ...createBlock(solution.charAt(i))});
         }
@@ -427,9 +432,24 @@ export default class Grid extends Component {
 
 
     tick() {
-        if(!this.state.paused){
-            var points = [];
-            const {grid, w, h} = this.state;
+      if(!this.state.paused){
+        var points = [];
+        const {grid, w, h} = this.state;
+        for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
+            for(j = 9; j >= 0; j--) { // w is 10
+                if(belongs(this.checkColor(i,j))){
+                    points.push({i, j});
+                }
+            }
+        }
+
+        var can = this.canMoveDown(points);
+        if(can){
+            this.moveDown(points);
+        };
+
+        if(!can && this.grid[3].includes(1)) {
+            clearInterval(this.interval);
             for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
                 for(j = 9; j >= 0; j--) { // w is 10
                     if(belongs(this.checkColor(i,j))){
@@ -471,13 +491,14 @@ export default class Grid extends Component {
                 }
                 //cant move down
 
-                this.can = true;
-                this.checkRowsToClear();
-                this.loadNextBlock();
-            }
+            this.can = true;
+            this.checkRowsToClear();
+            this.setState({numRounds: this.state.numRounds + 1}, () => this.loadNextBlock());
         }
 
     }
+  }
+  }
 
     renderCells() {
         var size = 24;

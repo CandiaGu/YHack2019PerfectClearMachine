@@ -60,12 +60,12 @@ export function generateSolution(type) {
   if (sols.length == 0) {
     sols = loadSolutions();
   }
-  console.log(sols.length);
-  console.log(sols[type]);
-  const j = getRandomInt(0,sols[type].length);
-  var x = sols[type][j];
+  var keys = Object.keys(sols[type]);
+  const j = getRandomInt(0,keys.length);
+  var x = keys[j];
+  var url = sols[type][keys[j]];
 
-  return x;
+  return [x, url];
 
 }
 
