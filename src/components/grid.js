@@ -327,7 +327,7 @@ export default class Grid extends Component {
         var row_was_cleared = false;
         var num_rows_cleared = 0;
         var rows_to_clear = [];
-        for (i = 23; i >= 4; i--) {
+        for (i = 4; i <= 23; i++) {
             if(!this.grid[i].includes(0)) {
                 console.log('adding row', i);
                 rows_to_clear.push(i);
