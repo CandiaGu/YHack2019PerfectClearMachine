@@ -58,7 +58,6 @@ export default class Grid extends Component {
 
     componentDidMount() {
         this.createGrid();
-        this.generateBlocks();
     }
 
     createGrid() {
@@ -97,7 +96,7 @@ export default class Grid extends Component {
     }
 
     tryAgain() {
-        this.setState({gameOver: false, score: 0, numPreviews: 5}, () => {
+        this.setState({gameOver: false, score: 0, numPreviews: 5, blocks: this.generateBlocks()}, () => {
             this.refresh();
             this.startGame()
         });
