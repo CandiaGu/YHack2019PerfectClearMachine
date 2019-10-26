@@ -3,6 +3,8 @@
  */
 import React, {Component} from 'react';
 import {
+SafeAreaView,
+WebView,
 View,
 StyleSheet,
 Image,
@@ -28,6 +30,7 @@ export default class Grid extends Component {
             score: 0,
             started: false,
             gameOver: true,
+            solutionVisible: false,
             init: props.init,
             url: "https://google.com",
             numRounds: 0
@@ -424,7 +427,13 @@ export default class Grid extends Component {
 
             this.can = true;
             this.checkRowsToClear();
-            this.setState({numRounds: this.state.numRounds + 1}, () => this.loadNextBlock());
+            this.setState({numRounds: this.state.numRounds + 1}, () => {
+              if (this.state.numRounds > 3) {
+                this.setState({gameOver:true});
+              } else {
+                this.loadNextBlock();
+              }
+            });
         }
 
     }
@@ -498,29 +507,70 @@ export default class Grid extends Component {
 
     }
 
+
     renderStart() {
+            if (this.state.started) {
+              return (
+                  <Modal
+                      animationType={"slide"}
+                      transparent={false}
+                      visible={this.state.numRounds >= 3}
+                      style={{flex: 1}}
+                  >
+                  <View style={{ flex: 1}}>
+                    <WebView
+                      source={{uri: this.state.url}}
+                      style={{marginTop: 20}}
+                    />
+                  <View style={{position:'absolute',right:0,marginBottom:90,marginRight:10}}>
+                    <TouchableOpacity onPress={() => {this.state.started ? this.tryAgain() : this.startGame()}}>
+                        <Text style={{fontSize: 32, color: 'black', fontWeight: '500'}}>
+                            {this.state.started ? 'TRY AGAIN' : 'START'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                 </View>
+                </Modal>
+              )
+            } else {
+              return (
+                  <Modal
+                      animationType={"slide"}
+                      transparent={true}
+                      visible={this.state.gameOver}
+                      style={{flex: 1}}
+                  >
+                      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
+                          <Text style={{fontSize: 64, fontWeight: '800'}}>
+                              <Text style={{color: 'blue'}}>T</Text>
+                              <Text style={{color: 'orange'}}>E</Text>
+                              <Text style={{color: 'yellow'}}>T</Text>
+                              <Text style={{color: 'green'}}>R</Text>
+                              <Text style={{color: 'red'}}>I</Text>
+                              <Text style={{color: 'cyan'}}>S</Text>
+                          </Text>
+
+                          <TouchableOpacity onPress={() => {this.state.started ? this.tryAgain() : this.startGame()}}>
+                              <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                  {this.state.started ? 'TRY AGAIN' : 'START'}</Text>
+                          </TouchableOpacity>
+                      </View>
+                  </Modal>
+              )
+          }
+    }
+
+    renderSolution() {
             return (
                 <Modal
                     animationType={"slide"}
-                    transparent={true}
-                    visible={this.state.gameOver}
+                    transparent={false}
+                    visible={this.state.numRounds > 3}
                     style={{flex: 1}}
                 >
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                        <Text style={{fontSize: 64, fontWeight: '800'}}>
-                            <Text style={{color: 'blue'}}>T</Text>
-                            <Text style={{color: 'orange'}}>E</Text>
-                            <Text style={{color: 'yellow'}}>T</Text>
-                            <Text style={{color: 'green'}}>R</Text>
-                            <Text style={{color: 'red'}}>I</Text>
-                            <Text style={{color: 'cyan'}}>S</Text>
-                        </Text>
-
-                        <TouchableOpacity onPress={() => {this.state.started ? this.tryAgain() : this.startGame()}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                {this.state.started ? 'TRY AGAIN' : 'START'}</Text>
-                        </TouchableOpacity>
-                    </View>
+                <WebView
+                  source={{uri: this.state.url}}
+                  style={{marginTop: 20}}
+                />
                 </Modal>
             )
     }
@@ -542,7 +592,6 @@ export default class Grid extends Component {
                     </View>
                 </View>
                 {this.renderButtons()}
-
                 {this.renderStart()}
             </View>
         )
