@@ -17,7 +17,7 @@ import CreateBlock from './create_block';
 
 import Cell from './cell';
 import Preview from './preview';
-import {belongs, createRandomBag} from './helpers';
+import {belongs, createRandomBag, createRandomBlock, createInit} from './helpers';
 import {rotate, srs} from './rotation';
 
 
@@ -80,26 +80,11 @@ export default class Grid extends Component {
     }
 
     initPerfectClear() {
-      for(i = 20; i < 24; i++) {
-          for(j = 0; j < 4; j++) {
-              this.changeColor(i, j, 'gray');
-          }
-          if ( i == 20 ) {
-            for (j = 9; j > 7; j--){
-              this.changeColor(i, j, 'gray');
-            }
-          }
-          if ( i == 21 || i == 23 ) {
-            for (j = 9; j > 6; j--){
-              this.changeColor(i, j, 'gray');
-            }
-          }
-          if ( i == 22) {
-            for (j = 9; j > 5; j--){
-              this.changeColor(i, j, 'gray');
-            }
-          }
+      x = createInit();
+      for (i = 0; i < x.length; i++){
+        this.changeColor(x[i][0], x[i][1], 'gray');
       }
+      console.log('Hmmm');
     }
 
     startGame() {
@@ -327,7 +312,7 @@ export default class Grid extends Component {
         this.held = false;
 
         this.loadNextBlockHelper(next.type);
-        
+
 
     }
 
@@ -620,7 +605,7 @@ export default class Grid extends Component {
                             <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                 settings</Text>
                         </TouchableOpacity>
-                        
+
                     </View>
                 </Modal>
             )
@@ -644,7 +629,7 @@ export default class Grid extends Component {
                     <TouchableOpacity onPress={() => {}}>
                         <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                             starter</Text>
-                    </TouchableOpacity>                       
+                    </TouchableOpacity>
                 </View>
             </Modal>
         )
@@ -652,16 +637,16 @@ export default class Grid extends Component {
     }
 
 ButtonClickCheckFunction = () =>{
- 
+
     this.setState({paused: true});
- 
+
   }
 
 HelpButtonClicked = () =>{
- 
+
     Alert.alert("Button Clicked")
     this.setState({paused: true});
- 
+
   }
 
 HoldPiece = () =>{
@@ -696,7 +681,7 @@ HoldPiece = () =>{
         this.loadNextBlockHelper(this.currentBlock);
         this.held = true;
     }
- 
+
   }
 
   renderHoldView(){

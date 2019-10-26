@@ -4,6 +4,32 @@
 const types = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
 const colors = ['yellow', 'purple', 'red', 'blue', 'orange', 'green', 'skyblue']
 
+export function createInit() {
+  // maybe take an input later
+  var matrix = [];
+  for(i = 20; i < 24; i++) {
+      for(j = 0; j < 4; j++) {
+          matrix.push([i,j]);
+      }
+      if ( i == 20 ) {
+        for (j = 9; j > 7; j--){
+          matrix.push([i,j]);
+        }
+      }
+      if ( i == 21 || i == 23 ) {
+        for (j = 9; j > 6; j--){
+          matrix.push([i,j]);
+        }
+      }
+      if ( i == 22) {
+        for (j = 9; j > 5; j--){
+          matrix.push([i,j]);
+        }
+      }
+  }
+  return matrix;
+}
+
 export function createRandomBlock() {
     var object = {
         type: types[getRandomInt(0, 7)],
@@ -72,4 +98,3 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
 }
-
