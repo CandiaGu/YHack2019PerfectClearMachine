@@ -37,6 +37,8 @@ export default class Grid extends Component {
         this.changeColor = this.changeColor.bind(this);
         this.checkColor = this.checkColor.bind(this);
 
+
+
     }
 
     componentDidMount() {
@@ -62,10 +64,34 @@ export default class Grid extends Component {
         });
     }
 
+    initPerfectClear() {
+      for(i = 20; i < 24; i++) {
+          for(j = 0; j < 4; j++) {
+              this.changeColor(i, j, 'gray');
+          }
+          if ( i == 20 ) {
+            for (j = 9; j > 7; j--){
+              this.changeColor(i, j, 'gray');
+            }
+          }
+          if ( i == 21 || i == 23 ) {
+            for (j = 9; j > 6; j--){
+              this.changeColor(i, j, 'gray');
+            }
+          }
+          if ( i == 22) {
+            for (j = 9; j > 5; j--){
+              this.changeColor(i, j, 'gray');
+            }
+          }
+      }
+    }
+
     startGame() {
         this.setState({gameOver: false, started: true, score: 0});
         this.loadNextBlock();
         clearInterval(this.interval);
+        this.initPerfectClear();
         this.interval = setInterval(() => {
             this.tick()
         }, this.speed)
