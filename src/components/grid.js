@@ -40,7 +40,7 @@ export default class Grid extends Component {
             paused: false,
             settingOpen: false,
             numBlocks: 5,
-            init: 0
+            init: props.init
         }
 
         this.grid = [];
@@ -321,7 +321,6 @@ export default class Grid extends Component {
         if (this.state != null) {
           type = this.state.init;
         }
-        console.log(type)
         var blocks = [];
         var solution = generateSolution(type);
         for(i = 0; i < solution.length; i++) {
