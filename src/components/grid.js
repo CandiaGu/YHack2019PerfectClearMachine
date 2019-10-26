@@ -112,13 +112,13 @@ export default class Grid extends Component {
         }, this.speed)
     }
 
-    rotate() {
+    // dir: left = -1, right = 1
+    rotate(dir) {
 
         if(this.grid[3].includes(1)) {
             return
         }
 
-        this.rotation += 1;
         var color;
         var points = [];
         var previous = [];
@@ -133,8 +133,9 @@ export default class Grid extends Component {
             }
         }
 
-        var rotated = rotate(this.currentBlock, points, this.rotation);
+        var rotated = rotate(this.currentBlock, points, this.rotation, dir);
         if(this.canRotate(rotated)) {
+            this.rotation = (this.rotation + dir + 4) % 4;
             // console.log('valid rotation');
             rotated.map((point) => {
                 this.changeColor(point[0], point[1], color);
@@ -467,8 +468,12 @@ export default class Grid extends Component {
                     <Image style={styles.img} source={require('../img/down_arrow.png')}/>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => this.rotate()}>
+                <TouchableOpacity onPress={() => this.rotate(-1)}>
                     <Image style={styles.img} source={require('../img/rotate_arrow.png')}/>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => this.rotate(1)}>
+                    <Image style={styles.img} source={require('../img/rotate_right_arrow.png')}/>
                 </TouchableOpacity>
 
 
