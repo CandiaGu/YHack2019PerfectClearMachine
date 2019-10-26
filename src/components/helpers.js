@@ -14,6 +14,24 @@ export function createRandomBlock() {
 
 }
 
+export function createRandomBag() {
+    bag = [{type: 'I', color: 'skyblue'},
+           {type: 'O', color: 'yellow'},
+           {type: 'T', color: 'purple'},
+           {type: 'S', color: 'green'},
+           {type: 'Z', color: 'red'},
+           {type: 'J', color: 'blue'},
+           {type: 'L', color: 'orange'}];
+    // Durstenfeld shuffle
+    for (i = 6; i > 0; i--) {
+        j = Math.floor(Math.random()*(i+1));
+        temp = bag[i];
+        bag[i] = bag[j];
+        bag[j] = temp;
+    }
+    return bag;
+}
+
 export function belongs(color) {
     return colors.includes(color);
 }

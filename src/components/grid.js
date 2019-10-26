@@ -13,7 +13,7 @@ TouchableOpacity
 
 import Cell from './cell';
 import Preview from './preview';
-import {belongs, createRandomBlock} from './helpers';
+import {belongs, createRandomBag} from './helpers';
 import {rotate, srs} from './rotation';
 
 export default class Grid extends Component {
@@ -23,8 +23,8 @@ export default class Grid extends Component {
             w: props.w,
             h: props.h,
             grid: [],
-            blocks: this.generateBlocks(),
-            numBlocks: 5,
+            blocks: [],
+            numPreviews: 5,
             score: 0,
             started: false,
             gameOver: true
@@ -72,7 +72,7 @@ export default class Grid extends Component {
     }
 
     tryAgain() {
-        this.setState({gameOver: false, score: 0}, () => {
+        this.setState({gameOver: false, score: 0, numPreviews: 5}, () => {
             this.refresh();
             this.startGame()
         });
@@ -273,17 +273,24 @@ export default class Grid extends Component {
             this.changeColor(3, 4, next.color);
             this.changeColor(3, 5, next.color);
         }
-        blocks.push({id: next.id + 5, ...createRandomBlock()});
-        this.setState({blocks});
+        this.generateBlocks(blocks);
 
     }
 
-    generateBlocks() {
-        var blocks = [];
-        for(i = 0; i < 5; i++) {
-            blocks.push({id: i, ...createRandomBlock()});
+    generateBlocks(blocks) {
+        var {blocks, numPreviews} = this.state;
+        numBlocks = blocks.length;
+        if (numBlocks < numPreviews) {
+            while (numBlocks < numPreviews) {
+                bag = createRandomBag();
+                for(i = 0; i < 7; i++) {
+                    id = blocks.length == 0 ? 0 : blocks[blocks.length-1].id+1;
+                    blocks.push({id: id, ...bag[i]});
+                }
+                numBlocks += 7;
+            }
         }
-        return blocks;
+        this.setState({blocks});
     }
 
     toString() {
@@ -363,7 +370,6 @@ export default class Grid extends Component {
 
 
     tick() {
-
         var points = [];
         const {grid, w, h} = this.state;
         for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
@@ -527,7 +533,7 @@ export default class Grid extends Component {
                     </View>
                     <View style={{marginLeft: 20, alignItems: 'center'}}>
                         <Text style={{fontSize: 16, fontWeight: '600'}}>NEXT</Text>
-                        <Preview blocks={this.state.blocks}/>
+                        <Preview blocks={this.state.blocks.slice(0, this.state.numPreviews)}/>
                     </View>
                 </View>
                 {this.renderButtons()}
