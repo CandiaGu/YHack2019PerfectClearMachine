@@ -23,12 +23,14 @@ export default class Grid extends Component {
             w: props.w,
             h: props.h,
             grid: [],
-            blocks: this.generateBlocks(0),
+            blocks: [],
             numBlocks: 5,
             score: 0,
             started: false,
             gameOver: true,
-            init: props.init
+            init: props.init,
+            url: "https://google.com",
+            numRounds: 0
         }
 
         this.grid = [];
@@ -43,7 +45,7 @@ export default class Grid extends Component {
     }
 
     componentDidMount() {
-        this.createGrid();
+        this.setState({blocks: this.generateBlocks(0)}, () => this.createGrid());
     }
 
     createGrid() {
@@ -72,8 +74,8 @@ export default class Grid extends Component {
     }
 
     startGame() {
-        this.setState({gameOver: false, started: true, score: 0});
-        this.loadNextBlock();
+        this.setState({gameOver: false, started: true, score: 0, numRounds: 0, url: this.url},
+          () => this.loadNextBlock());
         clearInterval(this.interval);
         this.initPerfectClear();
         this.interval = setInterval(() => {
@@ -289,7 +291,10 @@ export default class Grid extends Component {
           type = this.state.init;
         }
         var blocks = [];
-        var solution = generateSolution(type);
+        var solution_url = generateSolution(type);
+        var solution = solution_url[0];
+        var url = solution_url[1];
+        this.url = url;
         for(i = 0; i < solution.length; i++) {
            blocks.push({id: i, ...createBlock(solution.charAt(i))});
         }
@@ -374,7 +379,6 @@ export default class Grid extends Component {
 
 
     tick() {
-
         var points = [];
         const {grid, w, h} = this.state;
         for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
@@ -420,7 +424,7 @@ export default class Grid extends Component {
 
             this.can = true;
             this.checkRowsToClear();
-            this.loadNextBlock();
+            this.setState({numRounds: this.state.numRounds + 1}, () => this.loadNextBlock());
         }
 
     }
