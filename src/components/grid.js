@@ -17,7 +17,7 @@ import CreateBlock from './create_block';
 
 import Cell from './cell';
 import Preview from './preview';
-import {belongs, createRandomBag, createRandomBlock, createInit} from './helpers';
+import {belongs, createRandomBag, createRandomBlock, createInit, generateSolution, createBlock} from './helpers';
 import {rotate, srs} from './rotation';
 
 
@@ -84,7 +84,6 @@ export default class Grid extends Component {
       for (i = 0; i < x.length; i++){
         this.changeColor(x[i][0], x[i][1], 'gray');
       }
-      console.log('Hmmm');
     }
 
     startGame() {
@@ -317,19 +316,13 @@ export default class Grid extends Component {
     }
 
     generateBlocks() {
-        var {blocks, numPreviews} = this.state;
-        numBlocks = blocks.length;
-        if (numBlocks < numPreviews) {
-            while (numBlocks < numPreviews) {
-                bag = createRandomBag();
-                for(i = 0; i < 7; i++) {
-                    id = blocks.length == 0 ? 0 : blocks[blocks.length-1].id+1;
-                    blocks.push({id: id, ...bag[i]});
-                }
-                numBlocks += 7;
-            }
+        var blocks = [];
+        var solution = generateSolution();
+        for(i = 0; i < solution.length; i++) {
+           blocks.push({id: i, ...createBlock(solution.charAt(i))});
         }
-        this.setState({blocks});
+        blocks.push({id: i, ...createRandomBlock()});
+        return blocks;
     }
 
     toString() {
