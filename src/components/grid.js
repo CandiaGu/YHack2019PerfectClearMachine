@@ -156,7 +156,7 @@ export default class Grid extends Component {
             shift = srs(this.currentBlock, this.rotation, dir, test);
             srotated = rotated.map(p => [p[0]-shift[1], p[1]+shift[0]]);
             if(this.canRotate(srotated)) {
-                movedPiece = true;
+                this.movedPiece = true;
                 this.rotation = (this.rotation + dir + 4) % 4;
                 // console.log('valid rotation');
                 srotated.map((point) => {
@@ -209,7 +209,7 @@ export default class Grid extends Component {
     }
 
     shift(points, direction) {
-        movedPiece = true;
+        this.movedPiece = true;
         var shift = direction == 'left' ? -1 : 1;
         if (direction == 'right') {
             points = points.reverse();
@@ -452,8 +452,8 @@ export default class Grid extends Component {
         }
 
         if(!can) {
-            if (movedPiece) {
-              movedPiece = false;
+            if (this.movedPiece) {
+              this.movedPiece = false;
               return;
             }
             for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
