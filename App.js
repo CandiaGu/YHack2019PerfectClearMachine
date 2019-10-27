@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, StatusBar} from 'react-native';
 import Main from './src/main';
-import { createStackNavigator, createSwitchNavigator, createAppContainer, StatusBar } from 'react-navigation';
+import { createStackNavigator, createSwitchNavigator, createAppContainer} from 'react-navigation';
 
 import SplashScreen from './SplashScreen';
 import Settings from './Settings';
@@ -20,6 +20,7 @@ class App extends React.Component {
   render() {
   return (
     <View style={styles.container} >
+      <StatusBar hidden={true} />
       <Main gravity={this.gravity} init={this.sp} navigate={this.navigate} />
     </View>
   );
