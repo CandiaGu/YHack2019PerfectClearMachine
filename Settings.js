@@ -30,7 +30,7 @@ class Settings extends React.Component {
         <Text>Starting Pieces</Text>
         <View style={{flex: 1, flexDirection: 'column'}}>
           <TouchableOpacity onPress={ () => this.selectStart(1) }>
-            <Image source={require('./assets/start1.png')} style={{width: 100, height: 100, resizeMode: 'contain',}}/>
+            <Image source={require('./assets/start4.png')} style={{width: 100, height: 100, resizeMode: 'contain',}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={ () => this.selectStart(2) }>
             <Image source={require('./assets/start2.png')} style={{width: 100, height: 100, resizeMode: 'contain',}}/>
@@ -39,7 +39,7 @@ class Settings extends React.Component {
             <Image source={require('./assets/start3.png')} style={{width: 100, height: 100, resizeMode: 'contain',}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={ () => this.selectStart(4) }>
-            <Image source={require('./assets/start4.png')} style={{width: 100, height: 100, resizeMode: 'contain',}}/>
+            <Image source={require('./assets/start1.png')} style={{width: 100, height: 100, resizeMode: 'contain',}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={ () => this.selectStart(5) }>
             <Image source={require('./assets/start5.png')} style={{width: 100, height: 100, resizeMode: 'contain',}}/>
