@@ -52,6 +52,9 @@ export default class Grid extends Component {
             settingOpen: false
         }
 
+        this.lastBlocks = [];
+        this.streak = 0;
+        this.won = false;
         this.grid = [];
         this.id = 1;
         this.currentBlock = 'J';
@@ -338,7 +341,16 @@ export default class Grid extends Component {
     }
 
     generateBlocks() {
-
+        if (this.lastBlocks.length > 0 && !this.won){
+            if (this.state.init > 1 && this.state.init < 4) {
+              this.setState({holdPiece: [{id:this.id++, type: 'I', color: this.typeColorDict['I']}]});
+            } else if (this.state.init == 4){
+              this.setState({holdPiece: [{id:this.id++, type: 'T', color: this.typeColorDict['T']}]});
+            } else {
+              this.setState({holdPiece: [{id:-1, type:'', color: ''}]});
+            }
+            return Array.from(this.lastBlocks);
+        }
         var blocks = [];
         var solution_url = generateSolution(this.state.init);
         var solution = solution_url[0];
@@ -362,6 +374,7 @@ export default class Grid extends Component {
         } else {
           this.setState({holdPiece: [{id:-1, type:'', color: ''}]})
         }
+        this.lastBlocks = Array.from(blocks);
         return blocks;
     }
 
@@ -510,9 +523,9 @@ export default class Grid extends Component {
                 this.checkRowsToClear();
                 this.setState({numRounds: this.state.numRounds + 1}, () => {
                   if (this.state.numRounds >= 3 && this.state.init < 2) {
-                    this.setState({gameOver:true});
+                    this.setState({gameOver:true, won: this.score >= 4000});
                   } else if (this.state.numRounds >= 4 && this.state.init >= 2){
-                    this.setState({gameOver:true});
+                    this.setState({gameOver:true, won: this.score >= 4000});
                   } else {
                     this.loadNextBlock();
                   }
@@ -596,6 +609,10 @@ export default class Grid extends Component {
 
     renderStart() {
             if (this.state.started && this.state.score < 4000) {
+              if (this.state.gameOver){
+                 this.streak = 0;
+                 this.won = false;
+              }
               return (
                   <Modal
                       animationType={"slide"}
@@ -618,6 +635,10 @@ export default class Grid extends Component {
                 </Modal>
               )
             } else if ( this.state.score >= 4000 ){
+              if (this.state.gameOver){
+                 this.streak++;
+                 this.won = true;
+              }
               return (
                   <Modal
                       animationType={"slide"}
@@ -673,22 +694,6 @@ export default class Grid extends Component {
             </Modal>
         )
           }
-    }
-
-    renderSolution() {
-            return (
-                <Modal
-                    animationType={"slide"}
-                    transparent={false}
-                    visible={this.state.numRounds > 3}
-                    style={{flex: 1}}
-                >
-                <WebView
-                  source={{uri: this.state.url}}
-                  style={{marginTop: 20}}
-                />
-                </Modal>
-            )
     }
 
     renderPause(){
@@ -817,6 +822,11 @@ HoldPiece = () =>{
                       <Text>?</Text>
                       </TouchableOpacity>
 
+            </View>
+            <View style={{flex: 1, flexDirection: 'row'}}>
+                      <View style={{width: '70%', height:60, backgroundColor: '#f76c6c', padding:10, borderBottomRightRadius: 10, alignItems: 'flex-end'}}>
+                        <Text style={{fontWeight: '700', fontSize: 26, color: 'white'}}> STREAK: {this.streak}</Text>
+                      </View>
             </View>
 
                 <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: '#364785', padding: 60, borderTopRightRadius: 10, borderTopLeftRadius:10}}>

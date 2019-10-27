@@ -3,7 +3,8 @@
  */
 import {loadSolutions} from './solutions';
 const types = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
-const colors = ['yellow', 'purple', 'red', 'blue', 'orange', 'green', 'skyblue']
+const typeColorDict = {'I':'skyblue', 'O':'yellow', 'T':'purple', 'S':'green', 'Z':'red', 'J':'blue', 'L':'orange'};
+const colors = ['skyblue', 'yellow', 'purple', 'green', 'red', 'blue', 'orange']
 var sols = []
 
 export function createInit(type) {
@@ -126,16 +127,17 @@ export function generateSolution(type) {
 export function createBlock(type) {
   var object = {
     type: type,
-    color: colors[getRandomInt(0,7)]
+    color: typeColorDict[type]
   }
   return object;
 
 }
 
 export function createRandomBlock() {
+    var t = getRandomInt(0,7);
     var object = {
-        type: types[getRandomInt(0, 7)],
-        color: colors[getRandomInt(0, 7)]
+        type: types[t],
+        color: typeColorDict[types[t]]
     };
 
     return object;
