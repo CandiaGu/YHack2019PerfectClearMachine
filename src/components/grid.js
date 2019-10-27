@@ -13,7 +13,12 @@ Modal,
 TouchableOpacity,
 Alert,
 Button
+TouchableWithoutFeedback,
+Alert,
+Dimensions
 } from 'react-native';
+
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 import CreateBlock from './create_block';
 
@@ -68,6 +73,8 @@ export default class Grid extends Component {
         this.checkColor = this.checkColor.bind(this);
         this.held = false;
         this.movedPiece = false; // whether user moved piece on last tick to delay lock
+        this.tickCount = 0;
+        this.gravityOn = true;
 
         this.typeColorDict = {'I':'skyblue', 'O':'yellow', 'T':'purple', 'S':'green', 'Z':'red', 'J':'blue', 'L':'orange'};
 
@@ -162,9 +169,10 @@ export default class Grid extends Component {
 
     hardDrop() {
         clearInterval(this.interval);
+        this.gravity = 0;
         this.interval = setInterval(() => {
             this.tick()
-        }, 1)
+        }, this.gravity);
     }
 
     softDrop() {
@@ -333,6 +341,7 @@ export default class Grid extends Component {
 
     loadNextBlock() {
         clearInterval(this.interval);
+        this.gravity = this.gravityOn ? 1000 : 1;
         this.interval = setInterval(() => {
             this.tick()
         }, this.gravity);
@@ -486,18 +495,39 @@ export default class Grid extends Component {
         if(!this.state.paused){
             var points = [];
             const {grid, w, h} = this.state;
-            for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
-                for(j = 9; j >= 0; j--) { // w is 10
-                    if(belongs(this.checkColor(i,j))){
-                        points.push({i, j});
-                    }
+        if (this.tickCount > 0) {
+            this.tickCount--;
+            if (this.tickCount == 0) {
+                clearInterval(this.interval);
+                this.interval = setInterval(() => {
+                    this.tick()
+                }, this.gravity);
+            }
+        }
+            
+        var points = [];
+        const {grid, w, h} = this.state;
+        var highest = 24;
+        for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
+            for(j = 9; j >= 0; j--) { // w is 10
+                if(belongs(this.checkColor(i,j))){
+                    points.push({i, j});
+                    highest = Math.min(highest, i);
                 }
             }
+        }
 
-            var can = this.canMoveDown(points);
-            if(can){
-                this.moveDown(points);
-            };
+        var can = this.canMoveDown(points);
+        if(can){
+            this.moveDown(points);
+            if (!this.gravityOn && highest == 4 && this.gravity > 0) {
+                clearInterval(this.interval);
+                this.gravity = Math.pow(2, 31) - 1;
+                this.interval = setInterval(() => {
+                    this.tick()
+                }, this.gravity);
+            }
+        };
 
             if(!can && this.grid[3].includes(1)) {
                 clearInterval(this.interval);
@@ -512,13 +542,11 @@ export default class Grid extends Component {
                 this.setState({gameOver: true});
                 // console.log('game over');
                 return
+        if(!can) {
+            if (this.movedPiece) {
+              this.movedPiece = false;
+              return;
             }
-
-            if(!can) {
-                if (this.movedPiece) {
-                  this.movedPiece = false;
-                  return;
-                }
                 for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
                     for(j = 9; j >= 0; j--) { // w is 10
                         if(belongs(this.checkColor(i,j))){
@@ -557,9 +585,7 @@ export default class Grid extends Component {
                     <View key={i} style={{height: 0, flexDirection: 'row'}}>
                         {row.map((cell, j) => {
                             var color = '#24305e';
-                            return <TouchableOpacity key={j} onPress={() => this.changeColor(i, j, 'blue')}>
                                 <Cell ref={i + ',' + j} color={color} size={size}/>
-                            </TouchableOpacity>
                         })}
                     </View>
                 )
@@ -580,12 +606,7 @@ export default class Grid extends Component {
                             color = 'red';
                         }
 
-                        return <TouchableOpacity key={j} onPress={() => {
-                            return //production
-                            this.changeColor(i, j, 'blue')
-                        }}>
-                            <Cell ref={i + ',' + j} borderWidth={1} color={color} size={size}/>
-                        </TouchableOpacity>
+                        return <Cell ref={i + ',' + j} borderWidth={1} color={color} size={size}/>
                     })}
                 </View>
             )
@@ -825,9 +846,42 @@ HoldPiece = () =>{
   giveUp = () => {
       this.setState({gameOver: true})
   }
+screenPress(evt) {
+    if (evt.nativeEvent.locationX < Dimensions.get('window').width / 2)
+        this.rotate(-1);
+    else
+        this.rotate(1);
+}
+
+
+swipeUp(evt) {
+    this.hardDrop();
+}
+
+swipeDown(evt) {
+    var swipes = Math.max(1, Math.floor(evt.dy / 24));
+    this.tickCount = swipes;
+    clearInterval(this.interval);
+    this.interval = setInterval(() => {
+        this.tick()
+    }, swipes)
+}
+
+swipeLeft(evt) {
+    this.shiftCells('left');
+}
+
+swipeRight(evt) {
+    this.shiftCells('right');
+}
 
     render() {
+        const config = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+        };
         return (
+          <TouchableWithoutFeedback onPress={evt => this.screenPress(evt)}>
             <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between',}}>
 
             <View style={{flex: 1, flexDirection: 'row'}}>
@@ -849,6 +903,8 @@ HoldPiece = () =>{
                       </View>
             </View>
 
+          <GestureRecognizer style={styles.container} onSwipeUp={evt => this.swipeUp(evt)} onSwipeDown={evt => this.swipeDown(evt)} onSwipeLeft={evt => this.swipeLeft(evt)} onSwipeRight={evt => this.swipeRight(evt)} config={config}>
+          <TouchableWithoutFeedback onPress={evt => this.screenPress(evt)}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between',  backgroundColor: '#374785', padding: 30, paddingTop: 60, borderTopRightRadius: 10, borderTopLeftRadius:10}}>
                     <View  style = {{marginRight: 35}}>
                         <Text style={{fontWeight: '700', color: 'white'}}>HOLD</Text>
@@ -858,9 +914,7 @@ HoldPiece = () =>{
 
                     </View>
                     <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
-                        <TouchableOpacity>
                         {this.renderCells()}
-                        </TouchableOpacity>
                         <TouchableOpacity style={{ backgroundColor:'#00A99D', borderRadius:20, padding:10, paddingLeft:30, paddingRight:30, margin:15}} onPress={this.giveUp}>
                           <Text style={{color:'white',fontWeight: '500', fontSize: 15,}}>I GIVE UP :(</Text>
                         </TouchableOpacity>
@@ -870,11 +924,14 @@ HoldPiece = () =>{
                         <Preview blocks={this.state.blocks.slice(0, this.state.numPreviews)}/>
                     </View>
                 </View>
+          </TouchableWithoutFeedback>
+          </GestureRecognizer>
                 {this.renderButtons()}
                 {this.renderStart()}
                 {this.renderPause()}
 
             </View>
+          </TouchableWithoutFeedback>
         )
     }
 }
