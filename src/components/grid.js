@@ -125,7 +125,7 @@ export default class Grid extends Component {
     refresh() {
         for(i = 4; i < 24; i++) {
             for(j = 0; j < 10; j++) {
-                this.changeColor(i, j, '#364785');
+                this.changeColor(i, j, '#24305e');
             }
         }
         //this.state.holdPiece = null;
@@ -155,7 +155,7 @@ export default class Grid extends Component {
         // console.log('changing color: ', i, j );
 
         var id = i + ',' + j;
-        var bin = color == '#364785' ? 0 : 1;
+        var bin = color == '#24305e' ? 0 : 1;
         this.grid[i][j] = bin;
         this.refs[id].changeColor(color);
     }
@@ -185,7 +185,7 @@ export default class Grid extends Component {
             for(j = 0; j < 10; j++) { // w is 10
                 if(belongs(this.checkColor(i, j))){
                     color = this.checkColor(i,j);
-                    this.changeColor(i,j, '#364785');
+                    this.changeColor(i,j, '#24305e');
                     points.push([i, j]);
                     previous.push([i,j]);
                 }
@@ -257,7 +257,7 @@ export default class Grid extends Component {
         }
         points.map((point) => {
             this.changeColor(point.i, point.j + shift, this.checkColor(point.i, point.j));
-            this.changeColor(point.i, point.j, '#364785');
+            this.changeColor(point.i, point.j, '#24305e');
         })
     }
 
@@ -397,7 +397,7 @@ export default class Grid extends Component {
     clearRow(row) {
         // console.log('clearing row', row);
         for (j = 0; j < 10; j++){
-            this.changeColor(row, j, '#364785');
+            this.changeColor(row, j, '#24305e');
         }
 
         for (i = row; i >= 4; i--) {
@@ -449,9 +449,9 @@ export default class Grid extends Component {
             }
         }
         points.map(point => {
-            if(this.checkColor(point.i, point.j) != '#364785' && this.checkColor(point.i, point.j) != 'gray') {
+            if(this.checkColor(point.i, point.j) != '#24305e' && this.checkColor(point.i, point.j) != 'gray') {
                 //active piece
-                this.changeColor(point.i, point.j, '#364785');
+                this.changeColor(point.i, point.j, '#24305e');
             }
 
         });
@@ -476,7 +476,7 @@ export default class Grid extends Component {
     moveDown(points) {
         points.map(point => {
             this.changeColor(point.i+1, point.j, this.checkColor(point.i, point.j));
-            this.changeColor(point.i, point.j, '#364785');
+            this.changeColor(point.i, point.j, '#24305e');
         })
 
     }
@@ -556,7 +556,7 @@ export default class Grid extends Component {
                 return (
                     <View key={i} style={{height: 0, flexDirection: 'row'}}>
                         {row.map((cell, j) => {
-                            var color = '#364785';
+                            var color = '#24305e';
                             return <TouchableOpacity key={j} onPress={() => this.changeColor(i, j, 'blue')}>
                                 <Cell ref={i + ',' + j} color={color} size={size}/>
                             </TouchableOpacity>
@@ -569,7 +569,7 @@ export default class Grid extends Component {
                 <View key={i} style={{flexDirection: 'row'}}>
                     {row.map((cell, j) => {
                         // console.log('color is:', cell)
-                        var color = '#364785';
+                        var color = '#24305e';
                         if(cell == 1) {
                             color = 'blue';
                         } else if(cell == 2) {
@@ -676,7 +676,7 @@ export default class Grid extends Component {
                           </Text>
 
                           <TouchableOpacity onPress={() => {this.state.started ? this.tryAgain() : this.startGame()}}>
-                              <Text style={{fontSize: 32, color: '#364785', fontWeight: '500'}}>
+                              <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                   {this.state.started ? 'TRY AGAIN' : 'START'}</Text>
                           </TouchableOpacity>
                       </View>
@@ -700,7 +700,7 @@ export default class Grid extends Component {
                     </Text>
 
                     <TouchableOpacity onPress={() => {this.state.started ? this.tryAgain() : this.startGame()}}>
-                        <Text style={{fontSize: 32, color: '#364785', fontWeight: '500'}}>
+                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                             {this.state.started ? 'TRY AGAIN' : 'START'}</Text>
                     </TouchableOpacity>
                 </View>
@@ -721,12 +721,12 @@ export default class Grid extends Component {
                         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
                             <Text style={{fontSize: 64, fontWeight: '800'}}>Paused</Text>
                             <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
-                                <Text style={{fontSize: 32, color: '#364785', fontWeight: '500'}}>
+                                <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     resume</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
-                                <Text style={{fontSize: 32, color: '#364785', fontWeight: '500'}}>
+                                <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     restart</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => this.props.navigate('Settings')}>
@@ -749,12 +749,12 @@ export default class Grid extends Component {
                         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
                             <Text style={{fontSize: 64, fontWeight: '800'}}>Help</Text>
                             <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
-                                <Text style={{fontSize: 32, color: '#364785', fontWeight: '500'}}>
+                                <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     resume</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
-                                <Text style={{fontSize: 32, color: '#364785', fontWeight: '500'}}>
+                                <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     restart</Text>
                             </TouchableOpacity>
 
@@ -832,7 +832,7 @@ HoldPiece = () =>{
 
             <View style={{flex: 1, flexDirection: 'row'}}>
                       <View style={{width: '70%', height:60, backgroundColor: '#f76c6c', padding:10, borderBottomRightRadius: 10, alignItems: 'flex-end'}}>
-                        <Text style={{fontWeight: '700', fontSize: 26, color: '#364785'}}>PERFECT CLEAR</Text>
+                        <Text style={{fontWeight: '700', fontSize: 26, color: 'white'}}>PERFECT CLEAR</Text>
                       </View>
                       <TouchableOpacity style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', justifyContent: 'center', alignItems: 'center', borderRadius:10,}} onPress={ this.ButtonClickCheckFunction }>
                       <Text>||</Text>
@@ -845,26 +845,28 @@ HoldPiece = () =>{
             </View>
             <View style={{flex: 1, flexDirection: 'row'}}>
                       <View style={{width: '70%', height:60, backgroundColor: '#f76c6c', padding:10, borderBottomRightRadius: 10, alignItems: 'flex-end'}}>
-                        <Text style={{fontWeight: '700', fontSize: 26, color: '#364785'}}> STREAK: {this.streak}</Text>
+                        <Text style={{fontWeight: '700', fontSize: 26, color: 'white'}}> STREAK: {this.streak}</Text>
                       </View>
             </View>
 
-                <View style={{flexDirection: 'row', justifyContent: 'center', backgroundColor: '#364785', padding: 30, borderTopRightRadius: 10, borderTopLeftRadius:10}}>
-                    <View >
-                        <Text>HOLD</Text>
-                        <TouchableOpacity style={{backgroundColor: 'white', width: 40, height: 40}} onPress={ this.HoldPiece }>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between',  backgroundColor: '#374785', padding: 30, paddingTop: 60, borderTopRightRadius: 10, borderTopLeftRadius:10}}>
+                    <View  style = {{marginRight: 35}}>
+                        <Text style={{fontWeight: '700', color: 'white'}}>HOLD</Text>
+                        <TouchableOpacity style={{backgroundColor: '#374785', width: 40, height: 40}} onPress={ this.HoldPiece }>
                             {this.renderHoldView()}
                         </TouchableOpacity>
 
                     </View>
-                    <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#24305e'}}>
+                    <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
                         <TouchableOpacity>
                         {this.renderCells()}
                         </TouchableOpacity>
-                        <Button title="I GIVE UP :(" onPress={this.giveUp} />
+                        <TouchableOpacity style={{ backgroundColor:'#00A99D', borderRadius:20, padding:10, paddingLeft:30, paddingRight:30, margin:15}} onPress={this.giveUp}>
+                          <Text style={{color:'white',fontWeight: '500', fontSize: 15,}}>I GIVE UP :(</Text>
+                        </TouchableOpacity>
                     </View>
                     <View style={{marginLeft: 20, alignItems: 'center'}}>
-                        <Text style={{fontSize: 16, fontWeight: '600'}}>NEXT</Text>
+                        <Text style={{fontWeight: '700', color: 'white'}}>NEXT</Text>
                         <Preview blocks={this.state.blocks.slice(0, this.state.numPreviews)}/>
                     </View>
                 </View>

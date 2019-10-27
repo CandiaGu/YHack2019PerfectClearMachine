@@ -91,7 +91,7 @@ export default class CreateBlock extends Component {
             return (
                 <View key={i} style={{flexDirection: 'row'}}>
                     {row.map((cell, j) => {
-                        var c = 'white';
+                        var c = '#374785';
                         if(cell == 1) {
                             c = color;
                         }
