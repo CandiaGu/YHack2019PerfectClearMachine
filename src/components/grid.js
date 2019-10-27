@@ -49,10 +49,11 @@ export default class Grid extends Component {
             holdPiece: [{id:-1, type:'', color: ''}],
             numPreviews: 5,
             paused: false,
-            settingOpen: false,
+            settingOpen: false
         }
 
         this.grid = [];
+        this.id = 0;
         this.currentBlock = 'J';
         this.rotation = 0;
         this.speed = 450;
@@ -342,12 +343,14 @@ export default class Grid extends Component {
         var solution = solution_url[0];
         var url = solution_url[1];
         this.url = url;
+        console.log(solution);
         for(i = 0; i < solution.length; i++) {
-           blocks.push({id: i, ...createBlock(solution.charAt(i))});
+           blocks.push({id: this.id + i, ...createBlock(solution.charAt(i))});
         }
         if (blocks.length < 5) {
-          blocks.push({id: i, ...createRandomBlock()});
+          blocks.push({id: this.id + 5, ...createRandomBlock()});
         }
+        this.id += 5;
         return blocks;
     }
 

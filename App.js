@@ -4,6 +4,7 @@ import Main from './src/main';
 import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
 
 import SplashScreen from './SplashScreen';
+import Settings from './Settings';
 
 class App extends React.Component {
 
@@ -21,7 +22,7 @@ class App extends React.Component {
   render() {
   return (
     <View style={styles.container}>
-      <Main/>
+      <Main gravity={this.gravity} init={this.sp}/>
     </View>
   );
   }
@@ -36,7 +37,8 @@ const styles = StyleSheet.create({
 
 const InitialNavigator = createSwitchNavigator({
   Splash: SplashScreen,
-  App: App
+  App: App,
+  Settings: Settings
 });
 
 export default createAppContainer(InitialNavigator);
