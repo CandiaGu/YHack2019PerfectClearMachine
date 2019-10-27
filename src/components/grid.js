@@ -714,11 +714,11 @@ export default class Grid extends Component {
             return (
                     <Modal
                         animationType={"slide"}
-                        transparent={true}
+                        transparent={false}
                         visible={this.state.paused}
                         style={{flex: 1}}
                     >
-                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
+                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'#374785'}}>
                             <Text style={{fontSize: 64, fontWeight: '800'}}>Paused</Text>
                             <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
                                 <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
@@ -834,12 +834,12 @@ HoldPiece = () =>{
                       <View style={{width: '70%', height:60, backgroundColor: '#f76c6c', padding:10, borderBottomRightRadius: 10, alignItems: 'flex-end'}}>
                         <Text style={{fontWeight: '700', fontSize: 26, color: 'white'}}>PERFECT CLEAR</Text>
                       </View>
-                      <TouchableOpacity style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', justifyContent: 'center', alignItems: 'center', borderRadius:10,}} onPress={ this.ButtonClickCheckFunction }>
-                      <Text>||</Text>
+                      <TouchableOpacity style={{width: 40 , height:40, margin:5, marginLeft:10, backgroundColor: '#fbe9a3', justifyContent: 'center', alignItems: 'center', borderRadius:10,}} onPress={ this.ButtonClickCheckFunction }>
+                      <Text style={{fontWeight: '900', fontSize: 18, color:'#374785'}}>||</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity style={{width: 40 , height:40, margin:5, backgroundColor: '#fbe9a3', justifyContent: 'center', alignItems: 'center', borderRadius:10,}} onPress={ this.HelpButtonClicked }>
-                      <Text>?</Text>
+                      <Text style={{fontWeight: '900', fontSize: 20, color:'#374785'}}>?</Text>
                       </TouchableOpacity>
 
             </View>
