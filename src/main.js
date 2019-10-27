@@ -18,7 +18,6 @@ export default class Main extends Component {
     this.gravity = props.gravity;
     this.init = props.init;
 
-    console.log("gravity; " + this.gravity);
   }
 
     render() {
