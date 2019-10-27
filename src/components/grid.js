@@ -542,21 +542,23 @@ export default class Grid extends Component {
                 <TouchableOpacity onPress={() => this.shiftCells('right')}>
                     <Image style={styles.img} source={require('../img/right-filled.png')}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => this.down()}>
+                <TouchableOpacity onPress={() => this.softDrop()}>
                     <Image style={styles.img} source={require('../img/down_arrow.png')}/>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => this.rotate()}>
-                    <Image style={styles.img} source={require('../img/rotate_arrow.png')}/>
+                <TouchableOpacity onPress={() => this.hardDrop()}>
+                    <Image style={styles.img} source={require('../img/up_arrow.png')}/>
                 </TouchableOpacity>
 
-
-
+                <TouchableOpacity onPress={() => this.rotate(-1)}>
+                    <Image style={styles.img} source={require('../img/rotate_arrow.png')}/>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => this.rotate(1)}>
+                    <Image style={styles.img} source={require('../img/rotate_right_arrow.png')}/>
+                </TouchableOpacity>
             </View>
         )
-
     }
-
 
     renderStart() {
             if (this.state.started && this.state.score < 4000) {
