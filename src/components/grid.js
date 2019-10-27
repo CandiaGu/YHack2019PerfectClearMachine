@@ -299,40 +299,40 @@ export default class Grid extends Component {
         var blockColor = this.typeColorDict[type];
         this.rotation = 0;
         if(type == 'I') {
-            this.changeColor(3, 3, blockColor);
-            this.changeColor(3, 4, blockColor);
-            this.changeColor(3, 5, blockColor);
-            this.changeColor(3, 6, blockColor);
+            this.changeColor(5, 3, blockColor);
+            this.changeColor(5, 4, blockColor);
+            this.changeColor(5, 5, blockColor);
+            this.changeColor(5, 6, blockColor);
         } else if(type == 'O') {
-            this.changeColor(2, 4, blockColor);
-            this.changeColor(2, 5, blockColor);
-            this.changeColor(3, 4, blockColor);
-            this.changeColor(3, 5, blockColor);
+            this.changeColor(4, 4, blockColor);
+            this.changeColor(4, 5, blockColor);
+            this.changeColor(5, 4, blockColor);
+            this.changeColor(5, 5, blockColor);
         } else if(type == 'T') {
-            this.changeColor(2, 4, blockColor);
-            this.changeColor(3, 3, blockColor);
-            this.changeColor(3, 4, blockColor);
-            this.changeColor(3, 5, blockColor);
+            this.changeColor(4, 4, blockColor);
+            this.changeColor(5, 3, blockColor);
+            this.changeColor(5, 4, blockColor);
+            this.changeColor(5, 5, blockColor);
         } else if(type == 'S') {
-            this.changeColor(2, 4, blockColor);
-            this.changeColor(2, 5, blockColor);
-            this.changeColor(3, 3, blockColor);
-            this.changeColor(3, 4, blockColor);
+            this.changeColor(4, 4, blockColor);
+            this.changeColor(4, 5, blockColor);
+            this.changeColor(5, 3, blockColor);
+            this.changeColor(5, 4, blockColor);
         } else if(type == 'Z') {
-            this.changeColor(2, 3, blockColor);
-            this.changeColor(2, 4, blockColor);
-            this.changeColor(3, 4, blockColor);
-            this.changeColor(3, 5, blockColor);
+            this.changeColor(4, 3, blockColor);
+            this.changeColor(4, 4, blockColor);
+            this.changeColor(5, 4, blockColor);
+            this.changeColor(5, 5, blockColor);
         } else if(type == 'J') {
-            this.changeColor(2, 3, blockColor);
-            this.changeColor(3, 3, blockColor);
-            this.changeColor(3, 4, blockColor);
-            this.changeColor(3, 5, blockColor);
+            this.changeColor(4, 3, blockColor);
+            this.changeColor(5, 3, blockColor);
+            this.changeColor(5, 4, blockColor);
+            this.changeColor(5, 5, blockColor);
         } else if(type == 'L') {
-            this.changeColor(2, 5, blockColor);
-            this.changeColor(3, 3, blockColor);
-            this.changeColor(3, 4, blockColor);
-            this.changeColor(3, 5, blockColor);
+            this.changeColor(4, 5, blockColor);
+            this.changeColor(5, 3, blockColor);
+            this.changeColor(5, 4, blockColor);
+            this.changeColor(5, 5, blockColor);
         }
         var {blocks} = this.state;
         this.setState({blocks});
@@ -538,6 +538,7 @@ export default class Grid extends Component {
                 this.setState({gameOver: true});
                 // console.log('game over');
                 return
+            }
         if(!can) {
             if (this.movedPiece) {
               this.movedPiece = false;
@@ -565,12 +566,12 @@ export default class Grid extends Component {
                     this.setState({gameOver:true, won: this.score >= 4000});
                   } else {
                     this.loadNextBlock();
+                    this.tickCount = 1;
                   }
                 });
           }
 
     }
-        }
   }
 
     renderCells() {
@@ -903,7 +904,7 @@ swipeRight(evt) {
           <GestureRecognizer style={styles.container} onSwipeUp={evt => this.swipeUp(evt)} onSwipeDown={evt => this.swipeDown(evt)} onSwipeLeft={evt => this.swipeLeft(evt)} onSwipeRight={evt => this.swipeRight(evt)} config={config}>
           <TouchableWithoutFeedback onPress={evt => this.screenPress(evt)}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between',  backgroundColor: '#374785', padding: 30, paddingTop: 60, borderTopRightRadius: 10, borderTopLeftRadius:10}}>
-                    <View  style = {{marginRight: 35}}>
+                    <View pointerEvents={'auto'} style = {{marginRight: 35}}>
                         <Text style={{fontWeight: '700', color: 'white'}}>HOLD</Text>
                         <TouchableOpacity style={{backgroundColor: '#374785', width: 40, height: 40}} onPress={ this.HoldPiece }>
                             {this.renderHoldView()}
@@ -911,7 +912,9 @@ swipeRight(evt) {
 
                     </View>
                     <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
+                    <View pointerEvents={'none'}>
                         {this.renderCells()}
+                        </View>
                         <TouchableOpacity style={{ backgroundColor:'#00A99D', borderRadius:20, padding:10, paddingLeft:30, paddingRight:30, margin:15}} onPress={this.giveUp}>
                           <Text style={{color:'white',fontWeight: '500', fontSize: 15,}}>I GIVE UP :(</Text>
                         </TouchableOpacity>
