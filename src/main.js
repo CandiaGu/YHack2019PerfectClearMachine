@@ -11,8 +11,6 @@ StyleSheet
 import Grid from './components/grid';
 
 export default class Main extends Component {
-<<<<<<< HEAD
-=======
 
   constructor(props) {
     super(props);
@@ -22,7 +20,6 @@ export default class Main extends Component {
 
   }
 
->>>>>>> 12688fa... updated settings page
     render() {
         return (
             <View style={styles.container}>
