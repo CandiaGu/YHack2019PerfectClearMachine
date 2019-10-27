@@ -122,6 +122,17 @@ export default class Grid extends Component {
         //this.state.holdPiece = null;
     }
 
+    hardDrop() {
+       clearInterval(this.interval);
+       this.interval = setInterval(() => {
+           this.tick()
+       }, 1)
+   }
+
+   softDrop() {
+       this.tick();
+   }
+
     checkColor(i,j) {
         var id = `${i},${j}`;
         if(this.refs[id] == null) {
@@ -556,7 +567,7 @@ export default class Grid extends Component {
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => this.hardDrop()}>
-                    <Image style={styles.img} source={require('../img/up_arrow.png')}/>
+                    <Image style={styles.img} source={require('../img/down_arrow.png')}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => this.rotate(-1)}>
