@@ -17,13 +17,14 @@ export default class Main extends Component {
 
     this.gravity = props.gravity;
     this.init = props.init;
+    this.navigate = props.navigate;
 
   }
 
     render() {
         return (
             <View style={styles.container}>
-                <Grid w={10} h={24} gravity={this.gravity} init={this.init}/>
+                <Grid w={10} h={24} gravity={this.gravity} init={this.init} navigate={this.navigate}/>
             </View>
         )
     }

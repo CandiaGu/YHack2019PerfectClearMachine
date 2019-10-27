@@ -20,18 +20,27 @@ class Settings extends React.Component {
   }
 
   renderSelectedButton(){
+
+      const images = [require("./assets/start4.png"),require("./assets/start2.png"),
+      require("./assets/start3.png"),require("./assets/start1.png"),
+      require("./assets/start5.png")]
+
       var buttons = [];
       for (let i=0; i < 5; i++) {
         if (i != this.state.startingPieces){
+              var j = i+1;
+              var str = "./assets/start"+ j.toString() +".png";
               buttons.push(
               <TouchableOpacity style={styles.startStyle} onPress={ () => this.selectStart(i) }>
-                <Image source={require('./assets/start1.png')} style={{width: 100, height: 50, resizeMode: 'contain',}}/>
+                <Image source={images[i]} style={{width: 100, height: 50, resizeMode: 'contain',}}/>
               </TouchableOpacity>
               )
         } else{
+            var j = i+1;
+            var str = "./assets/start"+j.toString()+".png";
             buttons.push(
               <TouchableOpacity style={styles.selectedStartStyle} onPress={ () => this.selectStart(i) }>
-                <Image source={require('./assets/start1.png')} style={{width: 100, height: 50, resizeMode: 'contain',}}/>
+                <Image source={images[i]} style={{width: 100, height: 50, resizeMode: 'contain',}}/>
               </TouchableOpacity>
             )
         }

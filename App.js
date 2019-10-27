@@ -13,13 +13,14 @@ class App extends React.Component {
 
     this.gravity = props.navigation.state.params.gravity;
     this.sp = props.navigation.state.params.startingPieces;
+    this.navigate = props.navigation.navigate;
 
   }
 
   render() {
   return (
     <View style={styles.container} >
-      <Main gravity={this.gravity} init={this.sp}/>
+      <Main gravity={this.gravity} init={this.sp} navigate={this.navigate} />
     </View>
   );
   }
