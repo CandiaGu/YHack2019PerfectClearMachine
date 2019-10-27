@@ -623,7 +623,7 @@ export default class Grid extends Component {
                       source={{uri: this.state.url}}
                       style={{marginTop: 20}}
                     />
-                  <View style={{position:'absolute',right:0,marginBottom:90,marginRight:10}}>
+                  <View style={{position:'absolute',right:0,marginTop:700,marginRight:50}}>
                     <TouchableOpacity onPress={() => {this.state.started ? this.tryAgain() : this.startGame()}}>
                         <Text style={{fontSize: 32, color: 'black', fontWeight: '500'}}>
                             {this.state.started ? 'TRY AGAIN' : 'START'}</Text>
