@@ -45,6 +45,7 @@ export default class Grid extends Component {
             settingOpen: false,
         }
 
+        this.navigate = props.navigate;
         this.grid = [];
         this.currentBlock = 'J';
         this.rotation = 0;
@@ -608,6 +609,10 @@ export default class Grid extends Component {
                                 <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     restart</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity onPress={() => this.props.navigate('Settings')}>
+                                <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                    setting</Text>
+                            </TouchableOpacity>
                             
                         </View>
                     </Modal>
@@ -632,7 +637,8 @@ export default class Grid extends Component {
                                 <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     restart</Text>
                             </TouchableOpacity>
-                            
+
+
                         </View>
                     </Modal>
                 )
