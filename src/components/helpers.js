@@ -112,8 +112,8 @@ export function generateSolution(type) {
   if (sols.length == 0) {
     sols = loadSolutions();
   }
-  console.log(type);
-  console.log(sols[type]);
+  // console.log(type);
+  // console.log(sols[type]);
 
   var keys = Object.keys(sols[type]);
   const j = getRandomInt(0,keys.length);
@@ -167,7 +167,7 @@ export function belongs(color) {
 }
 
 export function rotate(array) {
-    console.log(array);
+    // console.log(array);
     var m = array.length;
     var n = array[0].length;
     var matrix = [],

@@ -23,7 +23,6 @@ import {belongs, createRandomBag, createRandomBlock, createInit, generateSolutio
 import {rotate, srs} from './rotation';
 
 
-
 export default class Grid extends Component {
 
 
@@ -65,7 +64,6 @@ export default class Grid extends Component {
         this.held = false;
 
         this.typeColorDict = {'I':'skyblue', 'O':'yellow', 'T':'purple', 'S':'green', 'Z':'red', 'J':'blue', 'L':'orange'};
-
 
 
 
@@ -360,7 +358,7 @@ export default class Grid extends Component {
         if (this.state.init > 1){
            start += 1;
         }
-        console.log(solution);
+        // console.log(solution);
         for(i = start; i < solution.length; i++) {
            blocks.push({id: this.id + i, ...createBlock(solution.charAt(i))});
         }
@@ -387,7 +385,7 @@ export default class Grid extends Component {
     }
 
     clearRow(row) {
-        console.log('clearing row', row);
+        // console.log('clearing row', row);
         for (j = 0; j < 10; j++){
             this.changeColor(row, j, 'white');
         }
@@ -414,7 +412,7 @@ export default class Grid extends Component {
         var rows_to_clear = [];
         for (i = 4; i <= 23; i++) {
             if(!this.grid[i].includes(0)) {
-                console.log('adding row', i);
+                // console.log('adding row', i);
                 rows_to_clear.push(i);
             }
         }
@@ -502,7 +500,7 @@ export default class Grid extends Component {
                     }
                 }
                 this.setState({gameOver: true});
-                console.log('game over');
+                // console.log('game over');
                 return
             }
 
@@ -773,7 +771,7 @@ HoldPiece = () =>{
 
         if(newholdPiece[0].id==-1){
             newholdPiece = [{id:this.id++, type:this.currentBlock, color: this.typeColorDict[this.currentBlock]}];
-            console.log("holding:" + newholdPiece);
+            // console.log("holding:" + newholdPiece);
 
             var {blocks} = this.state;
             var next = blocks.splice(0,1)[0];
@@ -785,7 +783,7 @@ HoldPiece = () =>{
             //TODO: allow only one hold press
             var temp = newholdPiece[0].type;
             newholdPiece =[{id:this.id++, type:this.currentBlock, color: this.typeColorDict[this.currentBlock]}];
-            console.log("holding2:" + newholdPiece[0].type);
+            // console.log("holding2:" + newholdPiece[0].type);
             this.currentBlock = temp;
         }
 
