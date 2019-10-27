@@ -14,9 +14,6 @@ class App extends React.Component {
     this.gravity = props.navigation.state.params.gravity;
     this.sp = props.navigation.state.params.startingPieces;
 
-    console.log("????" + this.sp);
-    console.log("in app");
-
   }
 
   render() {

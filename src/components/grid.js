@@ -726,7 +726,9 @@ HoldPiece = () =>{
 
                     </View>
                     <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#24305e'}}>
+                        <TouchableOpacity>
                         {this.renderCells()}
+                        </TouchableOpacity>
                         <Button title="I GIVE UP :(" onPress={this.giveUp} />
                     </View>
                     <View style={{marginLeft: 20, alignItems: 'center'}}>
