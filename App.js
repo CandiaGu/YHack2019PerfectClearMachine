@@ -6,6 +6,18 @@ import { createStackNavigator, createSwitchNavigator, createAppContainer } from 
 import SplashScreen from './SplashScreen';
 
 class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.gravity = props.navigation.state.params.gravity;
+    this.sp = props.navigation.state.params.startingPieces;
+
+    console.log("????" + this.sp);
+    console.log("in app");
+
+  }
+
   render() {
   return (
     <View style={styles.container}>
