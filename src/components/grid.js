@@ -46,7 +46,7 @@ export default class Grid extends Component {
             help: false,
             settingOpen: false,
             numBlocks: 5,
-            init: props.init-1,
+            init: props.init,
             gravity: props.gravity,
             url: "https://google.com",
             numRounds: 0,
@@ -816,8 +816,8 @@ HoldPiece = () =>{
         }
   }
 
-  giveUp(){
-
+  giveUp = () => {
+      this.setState({gameOver: true})
   }
 
     render() {
