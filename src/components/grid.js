@@ -12,9 +12,8 @@ Text,
 Modal,
 TouchableOpacity,
 Alert,
-Button
+Button,
 TouchableWithoutFeedback,
-Alert,
 Dimensions
 } from 'react-native';
 
@@ -74,7 +73,7 @@ export default class Grid extends Component {
         this.held = false;
         this.movedPiece = false; // whether user moved piece on last tick to delay lock
         this.tickCount = 0;
-        this.gravityOn = true;
+        this.gravityOn = props.gravity;
 
         this.typeColorDict = {'I':'skyblue', 'O':'yellow', 'T':'purple', 'S':'green', 'Z':'red', 'J':'blue', 'L':'orange'};
 
@@ -504,9 +503,6 @@ export default class Grid extends Component {
                 }, this.gravity);
             }
         }
-            
-        var points = [];
-        const {grid, w, h} = this.state;
         var highest = 24;
         for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
             for(j = 9; j >= 0; j--) { // w is 10
@@ -574,6 +570,7 @@ export default class Grid extends Component {
           }
 
     }
+        }
   }
 
     renderCells() {
