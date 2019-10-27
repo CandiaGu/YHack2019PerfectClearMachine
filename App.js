@@ -1,15 +1,25 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import Main from './src/main';
-import { createStackNavigator, createSwitchNavigator, createAppContainer } from 'react-navigation';
+import { createStackNavigator, createSwitchNavigator, createAppContainer, StatusBar } from 'react-navigation';
 
 import SplashScreen from './SplashScreen';
+import Settings from './Settings';
 
 class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    this.gravity = props.navigation.state.params.gravity;
+    this.sp = props.navigation.state.params.startingPieces;
+
+  }
+
   render() {
   return (
-    <View style={styles.container}>
-      <Main/>
+    <View style={styles.container} >
+      <Main gravity={this.gravity} init={this.sp}/>
     </View>
   );
   }
@@ -24,7 +34,8 @@ const styles = StyleSheet.create({
 
 const InitialNavigator = createSwitchNavigator({
   Splash: SplashScreen,
-  App: App
+  App: App,
+  Settings: Settings
 });
 
 export default createAppContainer(InitialNavigator);

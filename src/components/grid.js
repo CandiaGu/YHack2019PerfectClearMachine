@@ -9,7 +9,8 @@ Image,
 Text,
 Modal,
 TouchableOpacity,
-Alert
+Alert,
+Button
 } from 'react-native';
 
 import CreateBlock from './create_block';
@@ -30,6 +31,8 @@ export default class Grid extends Component {
         this.state = {
             w: props.w,
             h: props.h,
+            gravity: props.gravity,
+            init: props.init,
             grid: [],
             blocks: [],
             holdPiece: [{id:-1, type:'', color: ''}],
@@ -38,6 +41,7 @@ export default class Grid extends Component {
             started: false,
             gameOver: true,
             paused: false,
+            help: false,
             settingOpen: false,
         }
 
@@ -433,7 +437,7 @@ export default class Grid extends Component {
                     }
                 }
             }
-            
+
             var can = this.canMoveDown(points);
             if(can){
                 this.moveDown(points);
@@ -585,59 +589,57 @@ export default class Grid extends Component {
     }
 
     renderPause(){
-        return (
-                <Modal
-                    animationType={"slide"}
-                    transparent={true}
-                    visible={this.state.paused&&!this.state.settingOpen}
-                    style={{flex: 1}}
-                >
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                        <Text style={{fontSize: 64, fontWeight: '800'}}>Paused</Text>
-                        <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                resume</Text>
-                        </TouchableOpacity>
+        if(!this.state.help){
+            return (
+                    <Modal
+                        animationType={"slide"}
+                        transparent={true}
+                        visible={this.state.paused}
+                        style={{flex: 1}}
+                    >
+                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
+                            <Text style={{fontSize: 64, fontWeight: '800'}}>Paused</Text>
+                            <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
+                                <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                    resume</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                restart</Text>
-                        </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
+                                <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                    restart</Text>
+                            </TouchableOpacity>
+                            
+                        </View>
+                    </Modal>
+                )
+        }
+        else{
+            return (
+                    <Modal
+                        animationType={"slide"}
+                        transparent={true}
+                        visible={this.state.paused&&this.help}
+                        style={{flex: 1}}
+                    >
+                        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
+                            <Text style={{fontSize: 64, fontWeight: '800'}}>Help</Text>
+                            <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
+                                <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                    resume</Text>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => {this.setState({settingOpen: true})}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                settings</Text>
-                        </TouchableOpacity>
-                        
-                    </View>
-                </Modal>
-            )
-
-    }
-
-    renderSetting(){
-        return (
-            <Modal
-                animationType={"slide"}
-                transparent={true}
-                visible={this.state.settingOpen}
-                style={{flex: 1}}
-            >
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                    <Text style={{fontSize: 64, fontWeight: '800'}}>Setting</Text>
-                    <TouchableOpacity onPress={() => {}}>
-                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                            gravity</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {}}>
-                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                            starter</Text>
-                    </TouchableOpacity>                       
-                </View>
-            </Modal>
-        )
+                            <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
+                                <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
+                                    restart</Text>
+                            </TouchableOpacity>
+                            
+                        </View>
+                    </Modal>
+                )
+        }
 
     }
+
 
 ButtonClickCheckFunction = () =>{
  
@@ -647,8 +649,8 @@ ButtonClickCheckFunction = () =>{
 
 HelpButtonClicked = () =>{
  
-    Alert.alert("Button Clicked")
     this.setState({paused: true});
+    this.setState({help: true});
  
   }
 
@@ -693,6 +695,10 @@ HoldPiece = () =>{
         }
   }
 
+  giveUp(){
+
+  }
+
     render() {
         return (
             <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between',}}>
@@ -719,8 +725,9 @@ HoldPiece = () =>{
                         </TouchableOpacity>
 
                     </View>
-                    <View style={{backgroundColor: '#24305e'}}>
+                    <View style={{flex: 1, flexDirection: 'column', backgroundColor: '#24305e'}}>
                         {this.renderCells()}
+                        <Button title="I GIVE UP :(" onPress={this.giveUp} />
                     </View>
                     <View style={{marginLeft: 20, alignItems: 'center'}}>
                         <Text style={{fontSize: 16, fontWeight: '600'}}>NEXT</Text>
@@ -730,7 +737,6 @@ HoldPiece = () =>{
                 {this.renderButtons()}
                 {this.renderStart()}
                 {this.renderPause()}
-                {this.renderSetting()}
 
             </View>
         )

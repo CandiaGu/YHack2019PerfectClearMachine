@@ -11,10 +11,20 @@ StyleSheet
 import Grid from './components/grid';
 
 export default class Main extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.gravity = props.gravity;
+    this.init = props.init;
+
+    console.log("gravity; " + this.gravity);
+  }
+
     render() {
         return (
             <View style={styles.container}>
-                <Grid w={10} h={24}/>
+                <Grid w={10} h={24} gravity={this.gravity} init={this.init}/>
             </View>
         )
     }
