@@ -43,17 +43,17 @@ export default class Grid extends Component {
             paused: false,
             settingOpen: false,
             numBlocks: 5,
-            init: props.init,
+            init: props.init-1,
+            gravity: props.gravity,
             url: "https://google.com",
             numRounds: 0,
-            holdPiece: [{id:-1, type:'', color: ''}],
             numPreviews: 5,
             paused: false,
             settingOpen: false
         }
 
         this.grid = [];
-        this.id = 0;
+        this.id = 1;
         this.currentBlock = 'J';
         this.rotation = 0;
         this.speed = 450;
@@ -98,7 +98,7 @@ export default class Grid extends Component {
     }
 
     startGame() {
-        this.setState({gameOver: false, started: true, score: 0, numRounds: 0, url: this.url, holdPiece: [{id:-1, type:'', color: ''}]},
+        this.setState({gameOver: false, started: true, score: 0, numRounds: 0, url: this.url},
           () => this.loadNextBlock());
         clearInterval(this.interval);
         this.initPerfectClear();
@@ -109,6 +109,7 @@ export default class Grid extends Component {
 
     tryAgain() {
         this.setState({gameOver: false, score: 0, numPreviews: 5, blocks: this.generateBlocks()}, () => {
+            this.held = false;
             this.refresh();
             this.startGame()
         });
@@ -343,14 +344,24 @@ export default class Grid extends Component {
         var solution = solution_url[0];
         var url = solution_url[1];
         this.url = url;
+        var start = 0;
+        if (this.state.init > 1){
+           start += 1;
+        }
         console.log(solution);
-        for(i = 0; i < solution.length; i++) {
+        for(i = start; i < solution.length; i++) {
            blocks.push({id: this.id + i, ...createBlock(solution.charAt(i))});
         }
-        if (blocks.length < 5) {
-          blocks.push({id: this.id + 5, ...createRandomBlock()});
+        var c = i;
+        while (blocks.length < 5) {
+          blocks.push({id: this.id + c, ...createRandomBlock()});
         }
         this.id += 5;
+        if (this.state.init > 1){
+          this.setState({holdPiece: [{id:this.id++, type:solution.charAt(0), color: this.typeColorDict[solution.charAt(0)]}]})
+        } else {
+          this.setState({holdPiece: [{id:-1, type:'', color: ''}]})
+        }
         return blocks;
     }
 
@@ -735,170 +746,6 @@ export default class Grid extends Component {
 
     }
 
-    renderPause(){
-        return (
-                <Modal
-                    animationType={"slide"}
-                    transparent={true}
-                    visible={this.state.paused&&!this.state.settingOpen}
-                    style={{flex: 1}}
-                >
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                        <Text style={{fontSize: 64, fontWeight: '800'}}>Paused</Text>
-                        <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                resume</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                restart</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => {this.setState({settingOpen: true})}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                settings</Text>
-                        </TouchableOpacity>
-
-                    </View>
-                </Modal>
-            )
-
-    }
-
-    renderSetting(){
-        return (
-            <Modal
-                animationType={"slide"}
-                transparent={true}
-                visible={this.state.settingOpen}
-                style={{flex: 1}}
-            >
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                    <Text style={{fontSize: 64, fontWeight: '800'}}>Setting</Text>
-                    <TouchableOpacity onPress={() => {}}>
-                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                            gravity</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {}}>
-                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                            starter</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
-        )
-
-    }
-
-    renderPause(){
-        return (
-                <Modal
-                    animationType={"slide"}
-                    transparent={true}
-                    visible={this.state.paused&&!this.state.settingOpen}
-                    style={{flex: 1}}
-                >
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                        <Text style={{fontSize: 64, fontWeight: '800'}}>Paused</Text>
-                        <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                resume</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                restart</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => {this.setState({settingOpen: true})}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                settings</Text>
-                        </TouchableOpacity>
-
-                    </View>
-                </Modal>
-            )
-
-    }
-
-    renderSetting(){
-        return (
-            <Modal
-                animationType={"slide"}
-                transparent={true}
-                visible={this.state.settingOpen}
-                style={{flex: 1}}
-            >
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                    <Text style={{fontSize: 64, fontWeight: '800'}}>Setting</Text>
-                    <TouchableOpacity onPress={() => {}}>
-                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                            gravity</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {}}>
-                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                            starter</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
-        )
-
-    }
-
-    renderPause(){
-        return (
-                <Modal
-                    animationType={"slide"}
-                    transparent={true}
-                    visible={this.state.paused&&!this.state.settingOpen}
-                    style={{flex: 1}}
-                >
-                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                        <Text style={{fontSize: 64, fontWeight: '800'}}>Paused</Text>
-                        <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                resume</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                restart</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={() => {this.setState({settingOpen: true})}}>
-                            <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                                settings</Text>
-                        </TouchableOpacity>
-
-                    </View>
-                </Modal>
-            )
-
-    }
-
-    renderSetting(){
-        return (
-            <Modal
-                animationType={"slide"}
-                transparent={true}
-                visible={this.state.settingOpen}
-                style={{flex: 1}}
-            >
-                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
-                    <Text style={{fontSize: 64, fontWeight: '800'}}>Setting</Text>
-                    <TouchableOpacity onPress={() => {}}>
-                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                            gravity</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => {}}>
-                        <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
-                            starter</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
-        )
-
-    }
 
 ButtonClickCheckFunction = () =>{
 
@@ -920,7 +767,7 @@ HoldPiece = () =>{
         var newholdPiece = this.state.holdPiece;
 
         if(newholdPiece[0].id==-1){
-            newholdPiece = [{id:0, type:this.currentBlock, color: this.typeColorDict[this.currentBlock]}];
+            newholdPiece = [{id:this.id++, type:this.currentBlock, color: this.typeColorDict[this.currentBlock]}];
             console.log("holding:" + newholdPiece);
 
             var {blocks} = this.state;
@@ -932,7 +779,7 @@ HoldPiece = () =>{
         else{
             //TODO: allow only one hold press
             var temp = newholdPiece[0].type;
-            newholdPiece =[{id:(newholdPiece[0].id+1)%2, type:this.currentBlock, color: this.typeColorDict[this.currentBlock]}];
+            newholdPiece =[{id:this.id++, type:this.currentBlock, color: this.typeColorDict[this.currentBlock]}];
             console.log("holding2:" + newholdPiece[0].type);
             this.currentBlock = temp;
         }

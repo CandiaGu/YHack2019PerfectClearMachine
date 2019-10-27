@@ -111,6 +111,9 @@ export function generateSolution(type) {
   if (sols.length == 0) {
     sols = loadSolutions();
   }
+  console.log(type);
+  console.log(sols[type]);
+
   var keys = Object.keys(sols[type]);
   const j = getRandomInt(0,keys.length);
   var x = keys[j];
