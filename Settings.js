@@ -5,10 +5,19 @@ class Settings extends React.Component {
 
   constructor(props){
     super(props);
+    console.log("pls");
+    console.log(props.navigation.state.params);
+    if (props.navigation.state.params != null){
+      this.gravity = props.navigation.state.params.gravity;
+      this.startingPieces = props.navigation.state.params.startingPieces;
+    } else {
+      this.gravity = true;
+      this.startingPieces = 0;
+    }
 
     this.state = {
-      gravity: false,
-      startingPieces: 0,
+      gravity: this.gravity,
+      startingPieces: this.startingPieces,
     }
 
     this.modeNum = 5;

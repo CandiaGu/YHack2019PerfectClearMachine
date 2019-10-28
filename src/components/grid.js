@@ -50,13 +50,8 @@ export default class Grid extends Component {
             help: false,
             settingOpen: false,
             numBlocks: 5,
-            init: props.init,
-            gravity: props.gravity,
             url: "https://google.com",
-            numRounds: 0,
-            numPreviews: 5,
-            paused: false,
-            settingOpen: false
+            numRounds: 0
         }
 
         this.lastBlocks = [];
@@ -748,7 +743,7 @@ export default class Grid extends Component {
                                 <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     restart</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => this.props.navigate('Settings')}>
+                            <TouchableOpacity onPress={() => this.props.navigate('Settings', {gravity: this.state.gravity, startingPieces: this.state.init})}>
                                 <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     setting</Text>
                             </TouchableOpacity>
