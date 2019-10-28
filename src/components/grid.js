@@ -95,6 +95,7 @@ export default class Grid extends Component {
         }
         this.grid = grid;
         this.setState({grid}, () => {
+          this.startGame();
         });
     }
 
