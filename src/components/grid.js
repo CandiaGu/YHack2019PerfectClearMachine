@@ -762,17 +762,17 @@ export default class Grid extends Component {
                     <Modal
                         animationType={"slide"}
                         transparent={true}
-                        visible={this.state.paused&&this.help}
+                        visible={this.state.paused&&this.state.help}
                         style={{flex: 1}}
                     >
                         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'rgba(0,0,0,.5)'}}>
                             <Text style={{fontSize: 64, fontWeight: '800'}}>Help</Text>
-                            <TouchableOpacity onPress={() => {this.setState({paused: false})}}>
+                            <TouchableOpacity onPress={() => {this.setState({paused: false, help: false})}}>
                                 <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     resume</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity onPress={() => {this.tryAgain(); this.setState({paused: false});}}>
+                            <TouchableOpacity onPress={() => {this.setState({paused: false, help: false}); this.tryAgain()}}>
                                 <Text style={{fontSize: 32, color: 'white', fontWeight: '500'}}>
                                     restart</Text>
                             </TouchableOpacity>
