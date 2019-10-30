@@ -72,6 +72,8 @@ export default class Grid extends Component {
         this.hardDropActive = false;
         this.sonicDropActive = false;
         this.sonicDropSetting = true;
+        this.activePiece = [];
+        this.EMPTY = '#24305e';
 
         this.typeColorDict = {'I':'skyblue', 'O':'yellow', 'T':'purple', 'S':'green', 'Z':'red', 'J':'blue', 'L':'orange'};
 
@@ -110,6 +112,7 @@ export default class Grid extends Component {
     }
 
     resetInterval(delay) {
+        console.log(delay);
         clearInterval(this.interval);
         if (arguments.length == 0) {
             if (this.gravityOn)
@@ -139,7 +142,7 @@ export default class Grid extends Component {
     refresh() {
         for(i = 4; i < 24; i++) {
             for(j = 0; j < 10; j++) {
-                this.changeColor(i, j, '#24305e');
+                this.changeColor(i, j, this.EMPTY);
             }
         }
         //this.state.holdPiece = null;
@@ -158,7 +161,7 @@ export default class Grid extends Component {
         // console.log('changing color: ', i, j );
 
         var id = i + ',' + j;
-        var bin = color == '#24305e' ? 0 : 1;
+        var bin = color == this.EMPTY ? 0 : 1;
         this.grid[i][j] = bin;
         this.refs[id].changeColor(color);
     }
@@ -181,6 +184,10 @@ export default class Grid extends Component {
         this.resetInterval(0);
     }
 
+    sortPoints(p, q) {
+        return p[0] != q[0] ? p[0] - q[0] : p[1] - q[1];
+    }
+
     // dir: left = -1, right = 1
     rotate(dir) {
 
@@ -194,15 +201,13 @@ export default class Grid extends Component {
         var color;
         var points = [];
         var previous = [];
-        for(i = 4; i < 24; i++) { //h is 20, so i want 20 rows
-            for(j = 0; j < 10; j++) { // w is 10
-                if(belongs(this.checkColor(i, j))){
-                    color = this.checkColor(i,j);
-                    this.changeColor(i,j, '#24305e');
-                    points.push([i, j]);
-                    previous.push([i,j]);
-                }
-            }
+        for (point of this.activePiece) {
+            var i = point[0];
+            var j = point[1];
+            color = this.checkColor(i,j);
+            this.changeColor(i,j, this.EMPTY);
+            points.push([i, j]);
+            previous.push([i,j]);
         }
 
         var rotated = rotate(this.currentBlock, points, this.rotation, dir);
@@ -216,6 +221,8 @@ export default class Grid extends Component {
                 srotated.map((point) => {
                     this.changeColor(point[0], point[1], color);
                 });
+                this.activePiece = srotated;
+                this.activePiece.sort(this.sortPoints);
                 return;
             }
         }
@@ -273,24 +280,18 @@ export default class Grid extends Component {
         }
         points.map((point) => {
             this.changeColor(point.i, point.j + shift, this.checkColor(point.i, point.j));
-            this.changeColor(point.i, point.j, '#24305e');
+            this.changeColor(point.i, point.j, this.EMPTY);
         })
+        this.activePiece = this.activePiece.map((point) => [point[0], point[1] + shift]);
     }
 
 
     shiftCells(direction) {
 
         var points = [];
-        for(i = 4; i < 24; i++) { //h is 20, so i want 20 rows
-            for(j = 0; j < 10; j++) { // w is 10
-                if(belongs(this.checkColor(i, j))){
-                    if(i == 4) {
-                        //return
-                    }
-                    points.push({i, j});
-                }
-            }
-        }
+
+        for (point of this.activePiece)
+            points.push({i:point[0], j:point[1]});
 
 
         var can = this.canShift(points, direction);
@@ -319,36 +320,43 @@ export default class Grid extends Component {
             this.changeColor(4, 4, blockColor);
             this.changeColor(4, 5, blockColor);
             this.changeColor(4, 6, blockColor);
+            this.activePiece = [[4,3],[4,4],[4,5],[4,6]];
         } else if(type == 'O') {
             this.changeColor(4, 4, blockColor);
             this.changeColor(4, 5, blockColor);
             this.changeColor(5, 4, blockColor);
             this.changeColor(5, 5, blockColor);
+            this.activePiece = [[4,4],[4,5],[5,4],[5,5]];
         } else if(type == 'T') {
             this.changeColor(4, 4, blockColor);
             this.changeColor(5, 3, blockColor);
             this.changeColor(5, 4, blockColor);
             this.changeColor(5, 5, blockColor);
+            this.activePiece = [[4,4],[5,3],[5,4],[5,5]];
         } else if(type == 'S') {
             this.changeColor(4, 4, blockColor);
             this.changeColor(4, 5, blockColor);
             this.changeColor(5, 3, blockColor);
             this.changeColor(5, 4, blockColor);
+            this.activePiece = [[4,4],[4,5],[5,3],[5,4]];
         } else if(type == 'Z') {
             this.changeColor(4, 3, blockColor);
             this.changeColor(4, 4, blockColor);
             this.changeColor(5, 4, blockColor);
             this.changeColor(5, 5, blockColor);
+            this.activePiece = [[4,3],[4,4],[5,4],[5,5]];
         } else if(type == 'J') {
             this.changeColor(4, 3, blockColor);
             this.changeColor(5, 3, blockColor);
             this.changeColor(5, 4, blockColor);
             this.changeColor(5, 5, blockColor);
+            this.activePiece = [[4,3],[5,3],[5,4],[5,5]];
         } else if(type == 'L') {
             this.changeColor(4, 5, blockColor);
             this.changeColor(5, 3, blockColor);
             this.changeColor(5, 4, blockColor);
             this.changeColor(5, 5, blockColor);
+            this.activePiece = [[4,5],[5,3],[5,4],[5,5]];
         }
         var {blocks} = this.state;
         this.setState({blocks});
@@ -412,64 +420,44 @@ export default class Grid extends Component {
 
     }
 
-    clearRow(row) {
-        // console.log('clearing row', row);
-        for (j = 0; j < 10; j++){
-            this.changeColor(row, j, '#24305e');
-        }
-
-        for (i = row; i >= 4; i--) {
-            for (k = 0; k < 10; k++) {
-                if(this.checkColor(i-1, k) != null) {
-                    this.changeColor(i, k, this.checkColor(i-1, k));
-                }
-            }
-            // if(this.grid[i-1] != null && !this.grid[i-1].includes(1)) {
-            //     console.log('breaking on row', i);
-            //     break;
-            // }
-        }
-
-
-    }
-
     checkRowsToClear() {
+        var grid = this.grid;
         clearInterval(this.interval);
         var row_was_cleared = false;
-        var num_rows_cleared = 0;
-        var rows_to_clear = [];
-        for (i = 4; i <= 23; i++) {
-            if(!this.grid[i].includes(0)) {
-                // console.log('adding row', i);
-                rows_to_clear.push(i);
-            }
+        var rows_to_not_clear = [];
+        var rows_in_piece = new Set();
+        for (point of this.activePiece)
+            rows_in_piece.add(point[0]);
+        for (var i = 4; i <= 23; i++)
+            if(!rows_in_piece.has(i) || grid[i].includes(0))
+                rows_to_not_clear.push(i);
+            else
+                row_was_cleared = true;
+        if (!row_was_cleared)
+            return;
+        var newrow, oldrow;
+        for (newrow = oldrow = 23; newrow >= 4 && grid[newrow].includes(1); newrow--, oldrow--) {
+            while (oldrow >= 4 && rows_in_piece.has(oldrow) && !grid[oldrow].includes(0))
+                oldrow--;
+            if (oldrow == newrow)
+                continue;
+            for (var j = 0; j < 10; j++)
+                this.changeColor(newrow, j, oldrow >= 4 && grid[oldrow][j] ? 'gray' : this.EMPTY);
         }
 
-        rows_to_clear.map((r) => {
-            this.clearRow(r);
-            num_rows_cleared++;
-            row_was_cleared = true;
-        });
-
-        if(row_was_cleared) {
-            this.setState({score: this.state.score + 1000 * num_rows_cleared});
-        }
+        this.setState({score: this.state.score + 1000 * (newrow-oldrow)});
     }
 
     clearCurrentPiece(){
         var points = [];
         const {grid, w, h} = this.state;
-        for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
-            for(j = 9; j >= 0; j--) { // w is 10
-                if(belongs(this.checkColor(i,j))){
-                    points.push({i, j});
-                }
-            }
-        }
+        for (point of this.activePiece)
+            points.push({i:point[0], j:point[1]});
+        points.reverse();
         points.map(point => {
-            if(this.checkColor(point.i, point.j) != '#24305e' && this.checkColor(point.i, point.j) != 'gray') {
+            if(this.checkColor(point.i, point.j) != this.EMPTY && this.checkColor(point.i, point.j) != 'gray') {
                 //active piece
-                this.changeColor(point.i, point.j, '#24305e');
+                this.changeColor(point.i, point.j, this.EMPTY);
             }
 
         });
@@ -494,9 +482,9 @@ export default class Grid extends Component {
     moveDown(points) {
         points.map(point => {
             this.changeColor(point.i+1, point.j, this.checkColor(point.i, point.j));
-            this.changeColor(point.i, point.j, '#24305e');
+            this.changeColor(point.i, point.j, this.EMPTY);
         })
-
+        this.activePiece = this.activePiece.map(point => [point[0]+1, point[1]]);
     }
 
 
@@ -511,14 +499,11 @@ export default class Grid extends Component {
             }
         }
         var highest = 24;
-        for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
-            for(j = 9; j >= 0; j--) { // w is 10
-                if(belongs(this.checkColor(i,j))){
-                    points.push({i, j});
-                    highest = Math.min(highest, i);
-                }
-            }
+        for (point of this.activePiece) {
+            points.push({i:point[0], j:point[1]});
+            highest = Math.min(highest, point[0]);
         }
+        points.reverse();
 
         var can = this.canMoveDown(points);
         if(can){
@@ -529,14 +514,8 @@ export default class Grid extends Component {
 
             if(!can && this.grid[3].includes(1)) {
                 clearInterval(this.interval);
-                for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
-                    for(j = 9; j >= 0; j--) { // w is 10
-                        if(belongs(this.checkColor(i,j))){
-                            // console.log('blue found on: ', i, j);
-                            this.changeColor(i, j, 'gray');
-                        }
-                    }
-                }
+                for (point of points)
+                    this.changeColor(point.i, point.j, 'gray');
                 this.setState({gameOver: true});
                 // console.log('game over');
                 return
@@ -551,17 +530,8 @@ export default class Grid extends Component {
                 this.resetInterval();
                 return;
             }
-                for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
-                    for(j = 9; j >= 0; j--) { // w is 10
-                        if(belongs(this.checkColor(i,j))){
-                            // console.log('blue found on: ', i, j);
-                            this.changeColor(i, j, 'gray');
-
-
-
-                        }
-                    }
-                }
+                for (point of points)
+                    this.changeColor(point.i, point.j, 'gray');
                 //cant move down
 
                 this.can = true;
@@ -573,7 +543,7 @@ export default class Grid extends Component {
                     this.setState({gameOver:true, won: this.score >= 4000});
                   } else {
                     this.loadNextBlock();
-                    this.tickCount = 1;
+                    this.tickCount = 0;
                   }
                 });
           }
@@ -589,7 +559,7 @@ export default class Grid extends Component {
                 return (
                     <View key={i} style={{height: 0, flexDirection: 'row'}}>
                         {row.map((cell, j) => {
-                            var color = '#24305e';
+                            var color = this.EMPTY;
                                 <Cell ref={i + ',' + j} color={color} size={size}/>
                         })}
                     </View>
@@ -600,7 +570,7 @@ export default class Grid extends Component {
                 <View key={i} style={{flexDirection: 'row'}}>
                     {row.map((cell, j) => {
                         // console.log('color is:', cell)
-                        var color = '#24305e';
+                        var color = this.EMPTY;
                         if(cell == 1) {
                             color = 'blue';
                         } else if(cell == 2) {
