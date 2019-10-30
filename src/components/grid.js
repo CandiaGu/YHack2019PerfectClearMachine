@@ -69,6 +69,9 @@ export default class Grid extends Component {
         this.movedPiece = false; // whether user moved piece on last tick to delay lock
         this.tickCount = 0;
         this.gravityOn = props.gravity;
+        this.hardDropActive = false;
+        this.sonicDropActive = false;
+        this.sonicDropSetting = true;
 
         this.typeColorDict = {'I':'skyblue', 'O':'yellow', 'T':'purple', 'S':'green', 'Z':'red', 'J':'blue', 'L':'orange'};
 
@@ -106,14 +109,23 @@ export default class Grid extends Component {
       }
     }
 
+    resetInterval(delay) {
+        clearInterval(this.interval);
+        if (arguments.length == 0) {
+            if (this.gravityOn)
+                delay = this.gravity;
+            else
+                return;
+        }
+        this.interval = setInterval(() => {
+            this.tick()
+        }, delay)
+    }
+
     startGame() {
         this.setState({gameOver: false, started: true, score: 0, numRounds: 0, url: this.url},
           () => this.loadNextBlock());
-        clearInterval(this.interval);
         this.initPerfectClear();
-        this.interval = setInterval(() => {
-            this.tick()
-        }, this.gravity)
     }
 
     tryAgain() {
@@ -132,17 +144,6 @@ export default class Grid extends Component {
         }
         //this.state.holdPiece = null;
     }
-
-    hardDrop() {
-       clearInterval(this.interval);
-       this.interval = setInterval(() => {
-           this.tick()
-       }, 1)
-   }
-
-   softDrop() {
-       this.tick();
-   }
 
     checkColor(i,j) {
         var id = `${i},${j}`;
@@ -163,19 +164,28 @@ export default class Grid extends Component {
     }
 
     hardDrop() {
-        clearInterval(this.interval);
-        this.gravity = 0;
-        this.interval = setInterval(() => {
-            this.tick()
-        }, this.gravity);
+        if (this.sonicDropActive)
+            return;
+        this.hardDropActive = true;
+        this.resetInterval(0);
     }
 
     softDrop() {
         this.tick();
     }
 
+    sonicDrop() {
+        if (this.hardDropActive)
+            return;
+        this.sonicDropActive = true;
+        this.resetInterval(0);
+    }
+
     // dir: left = -1, right = 1
     rotate(dir) {
+
+        if (this.hardDropActive || this.sonicDropActive)
+            return;
 
         if(this.grid[3].includes(1)) {
             return
@@ -253,6 +263,9 @@ export default class Grid extends Component {
     }
 
     shift(points, direction) {
+
+        if (this.hardDropActive || this.sonicDropActive)
+            return;
         this.movedPiece = true;
         var shift = direction == 'left' ? -1 : 1;
         if (direction == 'right') {
@@ -272,7 +285,7 @@ export default class Grid extends Component {
             for(j = 0; j < 10; j++) { // w is 10
                 if(belongs(this.checkColor(i, j))){
                     if(i == 4) {
-                        return
+                        //return
                     }
                     points.push({i, j});
                 }
@@ -291,14 +304,21 @@ export default class Grid extends Component {
 
     loadNextBlockHelper(type){
 
+        this.hardDropActive = false;
+
+        if (this.gravityOn)
+            this.resetInterval();
+        else
+            this.resetInterval(0);
+
         this.currentBlock = type;
         var blockColor = this.typeColorDict[type];
         this.rotation = 0;
         if(type == 'I') {
-            this.changeColor(5, 3, blockColor);
-            this.changeColor(5, 4, blockColor);
-            this.changeColor(5, 5, blockColor);
-            this.changeColor(5, 6, blockColor);
+            this.changeColor(4, 3, blockColor);
+            this.changeColor(4, 4, blockColor);
+            this.changeColor(4, 5, blockColor);
+            this.changeColor(4, 6, blockColor);
         } else if(type == 'O') {
             this.changeColor(4, 4, blockColor);
             this.changeColor(4, 5, blockColor);
@@ -335,12 +355,6 @@ export default class Grid extends Component {
     }
 
     loadNextBlock() {
-        clearInterval(this.interval);
-        this.gravity = this.gravityOn ? 1000 : 1;
-        this.interval = setInterval(() => {
-            this.tick()
-        }, this.gravity);
-
 
         var {blocks} = this.state;
         var next = blocks.splice(0,1)[0];
@@ -493,10 +507,7 @@ export default class Grid extends Component {
         if (this.tickCount > 0) {
             this.tickCount--;
             if (this.tickCount == 0) {
-                clearInterval(this.interval);
-                this.interval = setInterval(() => {
-                    this.tick()
-                }, this.gravity);
+                this.resetInterval();
             }
         }
         var highest = 24;
@@ -512,13 +523,8 @@ export default class Grid extends Component {
         var can = this.canMoveDown(points);
         if(can){
             this.moveDown(points);
-            if (!this.gravityOn && highest == 4 && this.gravity > 0) {
+            if (!this.gravityOn && highest == 4 && !this.hardDropActive && !this.softDropActive)
                 clearInterval(this.interval);
-                this.gravity = Math.pow(2, 31) - 1;
-                this.interval = setInterval(() => {
-                    this.tick()
-                }, this.gravity);
-            }
         };
 
             if(!can && this.grid[3].includes(1)) {
@@ -535,10 +541,15 @@ export default class Grid extends Component {
                 // console.log('game over');
                 return
             }
+        if (this.movedPiece) {
+          this.movedPiece = false;
+          return;
+        }
         if(!can) {
-            if (this.movedPiece) {
-              this.movedPiece = false;
-              return;
+            if (this.sonicDropActive) {
+                this.sonicDropActive = false;
+                this.resetInterval();
+                return;
             }
                 for(i = 23; i >= 0; i--) { //h is 20, so i want 20 rows
                     for(j = 9; j >= 0; j--) { // w is 10
@@ -798,6 +809,9 @@ HelpButtonClicked = () =>{
 
 HoldPiece = () =>{
 
+    if (this.hardDropActive || this.softDropActive)
+        return;
+
     if(!this.held){
 
         var newholdPiece = this.state.holdPiece;
@@ -853,12 +867,13 @@ swipeUp(evt) {
 }
 
 swipeDown(evt) {
+    if (this.sonicDropSetting) {
+        this.sonicDrop();
+        return;
+    }
     var swipes = Math.max(1, Math.floor(evt.dy / 24));
     this.tickCount = swipes;
-    clearInterval(this.interval);
-    this.interval = setInterval(() => {
-        this.tick()
-    }, swipes)
+    this.resetInterval(swipes);
 }
 
 swipeLeft(evt) {
