@@ -112,7 +112,6 @@ export default class Grid extends Component {
     }
 
     resetInterval(delay) {
-        console.log(delay);
         clearInterval(this.interval);
         if (arguments.length == 0) {
             if (this.gravityOn)
@@ -195,7 +194,7 @@ export default class Grid extends Component {
             return;
 
         if(this.grid[3].includes(1)) {
-            return
+            //return
         }
 
         var color;
@@ -315,49 +314,22 @@ export default class Grid extends Component {
         this.currentBlock = type;
         var blockColor = this.typeColorDict[type];
         this.rotation = 0;
-        if(type == 'I') {
-            this.changeColor(4, 3, blockColor);
-            this.changeColor(4, 4, blockColor);
-            this.changeColor(4, 5, blockColor);
-            this.changeColor(4, 6, blockColor);
-            this.activePiece = [[4,3],[4,4],[4,5],[4,6]];
-        } else if(type == 'O') {
-            this.changeColor(4, 4, blockColor);
-            this.changeColor(4, 5, blockColor);
-            this.changeColor(5, 4, blockColor);
-            this.changeColor(5, 5, blockColor);
-            this.activePiece = [[4,4],[4,5],[5,4],[5,5]];
-        } else if(type == 'T') {
-            this.changeColor(4, 4, blockColor);
-            this.changeColor(5, 3, blockColor);
-            this.changeColor(5, 4, blockColor);
-            this.changeColor(5, 5, blockColor);
-            this.activePiece = [[4,4],[5,3],[5,4],[5,5]];
-        } else if(type == 'S') {
-            this.changeColor(4, 4, blockColor);
-            this.changeColor(4, 5, blockColor);
-            this.changeColor(5, 3, blockColor);
-            this.changeColor(5, 4, blockColor);
-            this.activePiece = [[4,4],[4,5],[5,3],[5,4]];
-        } else if(type == 'Z') {
-            this.changeColor(4, 3, blockColor);
-            this.changeColor(4, 4, blockColor);
-            this.changeColor(5, 4, blockColor);
-            this.changeColor(5, 5, blockColor);
-            this.activePiece = [[4,3],[4,4],[5,4],[5,5]];
-        } else if(type == 'J') {
-            this.changeColor(4, 3, blockColor);
-            this.changeColor(5, 3, blockColor);
-            this.changeColor(5, 4, blockColor);
-            this.changeColor(5, 5, blockColor);
-            this.activePiece = [[4,3],[5,3],[5,4],[5,5]];
-        } else if(type == 'L') {
-            this.changeColor(4, 5, blockColor);
-            this.changeColor(5, 3, blockColor);
-            this.changeColor(5, 4, blockColor);
-            this.changeColor(5, 5, blockColor);
-            this.activePiece = [[4,5],[5,3],[5,4],[5,5]];
-        }
+        if(type == 'I') 
+            this.activePiece = [[2,3],[2,4],[2,5],[2,6]];
+        else if(type == 'O') 
+            this.activePiece = [[2,4],[2,5],[3,4],[3,5]];
+        else if(type == 'T') 
+            this.activePiece = [[2,4],[3,3],[3,4],[3,5]];
+        else if(type == 'S') 
+            this.activePiece = [[2,4],[2,5],[3,3],[3,4]];
+        else if(type == 'Z') 
+            this.activePiece = [[2,3],[2,4],[3,4],[3,5]];
+        else if(type == 'J') 
+            this.activePiece = [[2,3],[3,3],[3,4],[3,5]];
+        else if(type == 'L') 
+            this.activePiece = [[2,5],[3,3],[3,4],[3,5]];
+        for (point of this.activePiece)
+            this.changeColor(point[0], point[1], blockColor);
         var {blocks} = this.state;
         this.setState({blocks});
     }
@@ -560,7 +532,7 @@ export default class Grid extends Component {
                     <View key={i} style={{height: 0, flexDirection: 'row'}}>
                         {row.map((cell, j) => {
                             var color = this.EMPTY;
-                                <Cell ref={i + ',' + j} color={color} size={size}/>
+                            return <Cell key={i+','+j} ref={i + ',' + j} color={color} size={size}/>
                         })}
                     </View>
                 )
@@ -581,7 +553,7 @@ export default class Grid extends Component {
                             color = 'red';
                         }
 
-                        return <Cell ref={i + ',' + j} borderWidth={1} color={color} size={size}/>
+                        return <Cell key={i+','+j} ref={i + ',' + j} borderWidth={1} color={color} size={size}/>
                     })}
                 </View>
             )

@@ -40,7 +40,7 @@ class Settings extends React.Component {
               var j = i+1;
               var str = "./assets/start"+ j.toString() +".png";
               buttons.push(
-              <TouchableOpacity style={styles.startStyle} onPress={ () => this.selectStart(i) }>
+              <TouchableOpacity key={i} style={styles.startStyle} onPress={ () => this.selectStart(i) }>
                 <Image source={images[i]} style={{width: 100, height: 50, resizeMode: 'contain',}}/>
               </TouchableOpacity>
               )
@@ -48,7 +48,7 @@ class Settings extends React.Component {
             var j = i+1;
             var str = "./assets/start"+j.toString()+".png";
             buttons.push(
-              <TouchableOpacity style={styles.selectedStartStyle} onPress={ () => this.selectStart(i) }>
+              <TouchableOpacity key={i} style={styles.selectedStartStyle} onPress={ () => this.selectStart(i) }>
                 <Image source={images[i]} style={{width: 100, height: 50, resizeMode: 'contain',}}/>
               </TouchableOpacity>
             )
