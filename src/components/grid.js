@@ -26,7 +26,7 @@ import Cell from './cell';
 import Preview from './preview';
 import {belongs, createRandomBag, createRandomBlock, createInit, generateSolution, createBlock, getRandomInt} from './helpers';
 import {rotate, srs} from './rotation';
-
+import {solve} from './solver';
 
 export default class Grid extends Component {
 
@@ -74,6 +74,8 @@ export default class Grid extends Component {
         this.sonicDropSetting = true;
         this.activePiece = [];
         this.EMPTY = '#24305e';
+        this.solution = [];
+        this.solutionMode = false;
 
         this.typeColorDict = {'I':'skyblue', 'O':'yellow', 'T':'purple', 'S':'green', 'Z':'red', 'J':'blue', 'L':'orange'};
 
@@ -83,6 +85,10 @@ export default class Grid extends Component {
 
     componentDidMount() {
         this.setState({blocks: this.generateBlocks()}, () => this.createGrid());
+        if (this.solution == null) {
+            console.log("failed to solve");
+            this.solutionMode = false;
+        }
     }
 
     createGrid() {
@@ -109,6 +115,8 @@ export default class Grid extends Component {
       for (i = 0; i < x.length; i++){
         this.changeColor(x[i][0], x[i][1], 'gray');
       }
+      if (this.solutionMode)
+        this.solution = solve(x, this.state.holdPiece[0].type, this.state.blocks.map(block => block.type), this.state.h, this.state.w);
     }
 
     resetInterval(delay) {
@@ -183,10 +191,6 @@ export default class Grid extends Component {
         this.resetInterval(0);
     }
 
-    sortPoints(p, q) {
-        return p[0] != q[0] ? p[0] - q[0] : p[1] - q[1];
-    }
-
     // dir: left = -1, right = 1
     rotate(dir) {
 
@@ -212,7 +216,7 @@ export default class Grid extends Component {
         var rotated = rotate(this.currentBlock, points, this.rotation, dir);
         for (test = 0; test < 5; test++) {
             shift = srs(this.currentBlock, this.rotation, dir, test);
-            srotated = rotated.map(p => [p[0]-shift[1], p[1]+shift[0]]);
+            srotated = rotated.map(p => [p[0]+shift[0], p[1]+shift[1]]);
             if(this.canRotate(srotated)) {
                 this.movedPiece = true;
                 this.rotation = (this.rotation + dir + 4) % 4;
@@ -221,7 +225,6 @@ export default class Grid extends Component {
                     this.changeColor(point[0], point[1], color);
                 });
                 this.activePiece = srotated;
-                this.activePiece.sort(this.sortPoints);
                 return;
             }
         }
@@ -459,9 +462,28 @@ export default class Grid extends Component {
         this.activePiece = this.activePiece.map(point => [point[0]+1, point[1]]);
     }
 
+    makeMove() {
+        if (
+            this.solutionMode && !this.hardDropActive
+            && !this.sonicDropActive && this.solution.length > 0
+        ) {
+            var move = this.solution.splice(0, 1)[0];
+            switch (move) {
+              case 'l': this.shiftCells('left'); break;
+              case 'r': this.shiftCells('right'); break;
+              case 'z': this.rotate(-1); break;
+              case 'x': this.rotate(1); break;
+              case 'h': this.HoldPiece(); break;
+              case 'u': this.hardDrop(); break;
+              case 'd': this.sonicDrop(); break;
+              default: console.log("unimplemented move " + move);
+            }
+        }
+    }
 
     tick() {
         if(!this.state.paused){
+            this.makeMove();
             var points = [];
             const {grid, w, h} = this.state;
         if (this.tickCount > 0) {
@@ -480,7 +502,7 @@ export default class Grid extends Component {
         var can = this.canMoveDown(points);
         if(can){
             this.moveDown(points);
-            if (!this.gravityOn && highest == 4 && !this.hardDropActive && !this.softDropActive)
+            if (!this.gravityOn && highest == 4 && !this.hardDropActive && !this.sonicDropActive)
                 clearInterval(this.interval);
         };
 
@@ -564,24 +586,24 @@ export default class Grid extends Component {
     renderButtons() {
         return (
             <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                <TouchableOpacity onPress={() => this.shiftCells('left')}>
+                <TouchableOpacity onPress={() => {if (!this.solutionMode) this.shiftCells('left')}}>
                     <Image style={styles.img} source={require('../img/left-filled.png')}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => this.shiftCells('right')}>
+                <TouchableOpacity onPress={() => {if (!this.solutionMode) this.shiftCells('right')}}>
                     <Image style={styles.img} source={require('../img/right-filled.png')}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => this.softDrop()}>
+                <TouchableOpacity onPress={() => {if (!this.solutionMode) this.softDrop()}}>
                     <Image style={styles.img} source={require('../img/down_arrow.png')}/>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => this.hardDrop()}>
+                <TouchableOpacity onPress={() => {if (!this.solutionMode) this.hardDrop()}}>
                     <Image style={styles.img} source={require('../img/up_arrow.png')}/>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => this.rotate(-1)}>
+                <TouchableOpacity onPress={() => {if (!this.solutionMode) this.rotate(-1)}}>
                     <Image style={styles.img} source={require('../img/rotate_arrow.png')}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => this.rotate(1)}>
+                <TouchableOpacity onPress={() => {if (!this.solutionMode) this.rotate(1)}}>
                     <Image style={styles.img} source={require('../img/rotate_right_arrow.png')}/>
                 </TouchableOpacity>
             </View>
@@ -589,10 +611,12 @@ export default class Grid extends Component {
     }
 
     renderStart() {
-            if (this.state.started && this.state.score < 4000) {
+            if ((this.state.started && this.state.score < 4000) || this.solutionMode) {
               if (this.state.gameOver){
                  this.streak = 0;
                  this.won = false;
+                 this.solutionMode = !this.solutionMode;
+                 this.gravityOn = this.solutionMode || this.props.gravity;
               }
               return (
                   <Modal
@@ -749,9 +773,8 @@ HelpButtonClicked = () =>{
 
   }
 
-HoldPiece = () =>{
-
-    if (this.hardDropActive || this.softDropActive)
+HoldPiece() {
+    if (this.hardDropActive || this.sonicDropActive)
         return;
 
     if(!this.held){
@@ -793,7 +816,7 @@ HoldPiece = () =>{
         }
   }
 
-  giveUp = () => {
+  giveUp() {
       this.setState({gameOver: true})
   }
 screenPress(evt) {
@@ -832,7 +855,7 @@ swipeRight(evt) {
             directionalOffsetThreshold: 80
         };
         return (
-          <TouchableWithoutFeedback onPress={evt => this.screenPress(evt)}>
+          <TouchableWithoutFeedback onPress={evt => {if (!this.solutionMode) this.screenPress(evt)}}>
             <View style={{flex: 1, flexDirection: 'column', justifyContent: 'space-between',}}>
 
             <View style={{flex: 1, flexDirection: 'row'}}>
@@ -854,12 +877,12 @@ swipeRight(evt) {
                       </View>
             </View>
 
-          <GestureRecognizer style={styles.container} onSwipeUp={evt => this.swipeUp(evt)} onSwipeDown={evt => this.swipeDown(evt)} onSwipeLeft={evt => this.swipeLeft(evt)} onSwipeRight={evt => this.swipeRight(evt)} config={config}>
-          <TouchableWithoutFeedback onPress={evt => this.screenPress(evt)}>
+          <GestureRecognizer style={styles.container} onSwipeUp={evt => {if (!this.solutionMode) this.swipeUp(evt)}} onSwipeDown={evt => {if (!this.solutionMode) this.swipeDown(evt)}} onSwipeLeft={evt => {if (!this.solutionMode) this.swipeLeft(evt)}} onSwipeRight={evt => {if (!this.solutionMode) this.swipeRight(evt)}} config={config}>
+          <TouchableWithoutFeedback onPress={evt => {if (!this.solutionMode) this.screenPress(evt)}}>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between',  backgroundColor: '#374785', padding: 30, paddingTop: 60, borderTopRightRadius: 10, borderTopLeftRadius:10}}>
                     <View pointerEvents={'auto'} style = {{marginRight: 35}}>
                         <Text style={{fontWeight: '700', color: 'white'}}>HOLD</Text>
-                        <TouchableOpacity style={{backgroundColor: '#374785', width: 40, height: 40}} onPress={ this.HoldPiece }>
+                        <TouchableOpacity style={{backgroundColor: '#374785', width: 40, height: 40}} onPress={ () => {if (!this.solutionMode) this.HoldPiece() }}>
                             {this.renderHoldView()}
                         </TouchableOpacity>
 
@@ -868,7 +891,7 @@ swipeRight(evt) {
                     <View pointerEvents={'none'}>
                         {this.renderCells()}
                         </View>
-                        <TouchableOpacity style={{ backgroundColor:'#00A99D', borderRadius:20, padding:10, paddingLeft:30, paddingRight:30, margin:15}} onPress={this.giveUp}>
+                        <TouchableOpacity style={{ backgroundColor:'#00A99D', borderRadius:20, padding:10, paddingLeft:30, paddingRight:30, margin:15}} onPress={() => {if (!this.solutionMode) this.giveUp()}}>
                           <Text style={{color:'white',fontWeight: '500', fontSize: 15,}}>I GIVE UP :(</Text>
                         </TouchableOpacity>
                     </View>
